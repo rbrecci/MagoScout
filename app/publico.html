@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061A2B">
+<!-- São nomes de menores com dados de desempenho. Esta página não entra em
+     buscador; o único obstáculo de acesso é o token da URL. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Estatísticas do time · MagoScout</title>
+<link rel="stylesheet" href="css/magoscout.css">
+</head>
+<body>
+
+<header class="capa-publica">
+  <h1 id="titulo">MagoScout</h1>
+  <p id="subtitulo">carregando</p>
+</header>
+
+<main class="conteudo">
+
+  <p class="secao-titulo">Ranking do time</p>
+  <div class="campo">
+    <label for="criterio">Ordenar por</label>
+    <select id="criterio"></select>
+  </div>
+  <p class="dica" id="aviso-criterio">Isto não diz quem é o melhor. Diz quem mais
+    faz cada coisa — troque o critério e a lista muda.</p>
+  <div class="lista" id="ranking"></div>
+
+  <p class="secao-titulo">Últimos jogos</p>
+  <div class="lista" id="jogos"></div>
+
+  <p class="dica" id="rodape"></p>
+
+</main>
+
+<div class="painel" id="painel" hidden>
+  <div class="folha">
+    <header>
+      <h2 id="painel-titulo">Jogador<small id="painel-sub"></small></h2>
+      <button type="button" class="bt-fechar" id="fechar-painel" aria-label="Fechar">✕</button>
+    </header>
+    <div id="painel-corpo"></div>
+  </div>
+</div>
+
+<script src="js/tipos.js"></script>
+<script src="js/estatisticas.js"></script>
+<script src="js/api.js"></script>
+<script src="js/publico.js"></script>
+</body>
+</html>

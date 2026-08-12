@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061A2B">
+<title>Evolução do jogador · MagoScout</title>
+<link rel="stylesheet" href="css/magoscout.css">
+</head>
+<body>
+
+<header class="barra">
+  <a class="bt-voltar" href="index.html" aria-label="Voltar" style="display:grid;place-items:center;text-decoration:none">←</a>
+  <h1 id="titulo">Jogador<small id="subtitulo">carregando</small></h1>
+</header>
+
+<main class="conteudo">
+
+  <div class="campo">
+    <label for="metrica">Métrica</label>
+    <select id="metrica"></select>
+  </div>
+  <div class="segmentos" id="filtro" role="group" aria-label="Recorte de período"></div>
+
+  <div class="moldura-grafico" id="moldura-linha">
+    <canvas id="g-linha" role="img" aria-label="Evolução do jogador jogo a jogo, comparada com a média do time"></canvas>
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <p class="secao-titulo">Regularidade</p>
+  <div class="comparativo" id="regularidade"></div>
+
+  <p class="secao-titulo">Jogo a jogo</p>
+  <div class="comparativo" id="jogos"></div>
+
+  <p class="dica" id="rodape-nota"></p>
+
+</main>
+
+<script src="js/db.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/tipos.js"></script>
+<script src="js/estatisticas.js"></script>
+<script src="js/grafico.js"></script>
+<script src="js/jogador.js"></script>
+</body>
+</html>

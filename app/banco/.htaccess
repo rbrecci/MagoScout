@@ -1,0 +1,14 @@
+# O schema não é segredo, mas também não precisa ficar disponível para
+# download: num host compartilhado, servir a estrutura do banco é entregar meio
+# caminho a quem estiver procurando o que atacar.
+#
+# O PHP embutido do dev local ignora este arquivo; ele existe para o Apache do
+# host (InfinityFree e a maioria dos compartilhados).
+
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>

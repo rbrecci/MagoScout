@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061A2B">
+<title>Análise da partida · MagoScout</title>
+<link rel="stylesheet" href="css/magoscout.css">
+</head>
+<body>
+
+<header class="barra">
+  <a class="bt-voltar" href="index.html" aria-label="Voltar" style="display:grid;place-items:center;text-decoration:none">←</a>
+  <h1 id="titulo">Partida<small id="subtitulo">carregando</small></h1>
+</header>
+
+<main class="conteudo">
+
+  <div class="cartao-placar">
+    <div>
+      <span class="numero" id="gols-pro">0</span>
+      <small>nós</small>
+    </div>
+    <span class="tracinho">×</span>
+    <div>
+      <span class="numero" id="gols-contra">0</span>
+      <small>eles</small>
+    </div>
+    <p class="resumo" id="resumo-jogo"></p>
+  </div>
+
+  <p class="secao-titulo">1º contra 2º tempo</p>
+  <div class="comparativo" id="comparativo"></div>
+  <div class="moldura-grafico" id="moldura-periodos">
+    <canvas id="g-periodos" role="img"
+      aria-label="Aproveitamento de finalização, passe e drible no 1º e no 2º tempo"></canvas>
+  </div>
+
+  <p class="secao-titulo">Jogadores</p>
+  <div class="segmentos" id="filtro" role="group" aria-label="Recorte de período"></div>
+  <div class="tiles" id="tiles"></div>
+
+  <div class="campo">
+    <label for="metrica">Comparar por</label>
+    <select id="metrica"></select>
+  </div>
+  <div class="moldura-grafico" id="moldura-jogadores">
+    <canvas id="g-jogadores" role="img" aria-label="Comparação dos jogadores com a média do time"></canvas>
+  </div>
+
+  <div class="lista" id="jogadores"></div>
+
+  <button type="button" class="bt-principal" id="bt-relatorio">Gerar imagem do jogo</button>
+  <p class="dica" id="rodape-nota"></p>
+
+</main>
+
+<div class="painel" id="painel" hidden>
+  <div class="folha">
+    <header>
+      <h2 id="painel-titulo">Jogador<small id="painel-sub"></small></h2>
+      <button type="button" class="bt-fechar" id="fechar-painel" aria-label="Fechar">✕</button>
+    </header>
+    <div id="painel-corpo"></div>
+  </div>
+</div>
+
+<script src="js/db.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/tipos.js"></script>
+<script src="js/estatisticas.js"></script>
+<script src="js/grafico.js"></script>
+<script src="js/relatorio.js"></script>
+<script src="js/analise.js"></script>
+</body>
+</html>
+</content>

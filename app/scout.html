@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#061A2B">
+<title>MagoScout — scout do jogo</title>
+<link rel="stylesheet" href="css/magoscout.css">
+</head>
+<body>
+
+<header class="topo">
+  <button type="button" class="placar" id="placar" aria-label="Dados da partida">
+    <span id="gols-pro">0</span><span aria-hidden="true">-</span><span id="gols-contra">0</span>
+    <small>placar</small>
+  </button>
+
+  <div class="relogio parado" id="relogio">
+    <div class="tempo" id="tempo">00:00</div>
+    <button type="button" class="periodo" id="periodo">1º tempo</button>
+  </div>
+
+  <button type="button" class="bt-play" id="play" aria-label="Iniciar cronômetro">▶</button>
+</header>
+
+<main class="quadra" id="quadra"></main>
+
+<section class="banco">
+  <h2>Banco</h2>
+  <div class="reservas" id="reservas"></div>
+</section>
+
+<nav class="rodape" id="rodape">
+  <button type="button" class="bt-time bt-desfazer" id="desfazer">↶<small>desfazer</small></button>
+</nav>
+
+<div class="painel" id="painel" hidden>
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="painel-titulo">
+    <header>
+      <h2 id="painel-titulo">&nbsp;<small id="painel-sub"></small></h2>
+      <button type="button" class="bt-fechar" id="fechar-painel" aria-label="Fechar">✕</button>
+    </header>
+    <div id="painel-corpo"></div>
+  </div>
+</div>
+
+<div class="aviso" id="aviso" role="status" aria-live="polite">
+  <span id="aviso-texto"></span>
+  <button type="button" id="aviso-desfazer" hidden>desfazer</button>
+</div>
+
+<script src="js/tipos.js"></script>
+<script src="js/db.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/scout.js"></script>
+<script>Scout.iniciar();</script>
+</body>
+</html>

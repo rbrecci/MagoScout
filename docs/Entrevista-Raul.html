@@ -1,0 +1,925 @@
+<title>MagoScout — Entrevista com o técnico</title>
+<style>
+  :root {
+    color-scheme: light dark;
+
+    --bg: #E9F0F7;
+    --surface: #FFFFFF;
+    --surface-2: #F4F8FC;
+    --ink: #071B31;
+    --ink-2: #2C455E;
+    --muted: #5B7288;
+    --line: #D3E0EC;
+    --line-strong: #A9C2D8;
+    --accent: #1263C4;
+    --accent-soft: #DCEAFA;
+    --accent-ink: #FFFFFF;
+    --pend: #B5762A;
+    --shadow: 0 1px 2px rgba(7, 27, 49, .06), 0 8px 24px rgba(7, 27, 49, .06);
+
+    --display: "Roboto Condensed", "Arial Narrow", "Helvetica Neue Condensed", "Liberation Sans Narrow", system-ui, sans-serif;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #071523;
+      --surface: #0E2136;
+      --surface-2: #132B44;
+      --ink: #E6EEF7;
+      --ink-2: #C3D5E6;
+      --muted: #8CA6BE;
+      --line: #1E3A57;
+      --line-strong: #2E547A;
+      --accent: #57A0EC;
+      --accent-soft: #14314F;
+      --accent-ink: #05192C;
+      --pend: #D9A25C;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #071523;
+    --surface: #0E2136;
+    --surface-2: #132B44;
+    --ink: #E6EEF7;
+    --ink-2: #C3D5E6;
+    --muted: #8CA6BE;
+    --line: #1E3A57;
+    --line-strong: #2E547A;
+    --accent: #57A0EC;
+    --accent-soft: #14314F;
+    --accent-ink: #05192C;
+    --pend: #D9A25C;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  }
+  :root[data-theme="light"] {
+    --bg: #E9F0F7;
+    --surface: #FFFFFF;
+    --surface-2: #F4F8FC;
+    --ink: #071B31;
+    --ink-2: #2C455E;
+    --muted: #5B7288;
+    --line: #D3E0EC;
+    --line-strong: #A9C2D8;
+    --accent: #1263C4;
+    --accent-soft: #DCEAFA;
+    --accent-ink: #FFFFFF;
+    --pend: #B5762A;
+    --shadow: 0 1px 2px rgba(7, 27, 49, .06), 0 8px 24px rgba(7, 27, 49, .06);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap { max-width: 660px; margin: 0 auto; padding: 0 16px 96px; }
+
+  /* ---------- capa ---------- */
+
+  .capa {
+    background: linear-gradient(168deg, #0A356B 0%, #072544 60%, #06203C 100%);
+    color: #EAF3FD;
+    padding: 34px 0 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .capa::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(76deg, rgba(255,255,255,.05) 0 1px, transparent 1px 46px);
+    pointer-events: none;
+  }
+  .capa .wrap { padding-bottom: 0; position: relative; z-index: 1; }
+
+  .marca {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: #7FB6F0;
+    margin: 0 0 10px;
+  }
+  .capa h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 8vw, 40px);
+    line-height: 1.05;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+    text-wrap: balance;
+    margin: 0 0 12px;
+  }
+  .capa p { margin: 0 0 8px; color: #B9D3EE; font-size: 15px; max-width: 46ch; }
+  .capa .assinatura { color: #7FB6F0; font-size: 13.5px; margin-top: 14px; }
+
+  /* ---------- progresso ---------- */
+
+  .barra {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .barra .wrap {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .trilho {
+    flex: 1;
+    height: 6px;
+    background: var(--line);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .preenche {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width .25s ease;
+  }
+  .contador {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: .08em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ---------- seções ---------- */
+
+  .secao { margin-top: 40px; }
+  .secao-cab {
+    border-top: 2px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 0;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .secao-cab h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--ink);
+  }
+  .secao-cab span {
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: .1em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ---------- pergunta ---------- */
+
+  .q {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+  .q-topo { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+  .num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .06em;
+    font-variant-numeric: tabular-nums;
+    color: var(--pend);
+    border: 1.5px solid currentColor;
+    border-radius: 5px;
+    min-width: 26px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    flex: none;
+    margin-top: 2px;
+  }
+  .q.ok .num { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+  .q-txt { font-weight: 600; color: var(--ink); font-size: 16.5px; text-wrap: pretty; }
+  .q-dica { display: block; font-weight: 400; font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .chave { border-left: 3px solid var(--accent); }
+
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border-radius: 8px;
+    padding: 11px 13px;
+    font-size: 15px;
+    line-height: 1.3;
+    cursor: pointer;
+    flex: 1 1 100%;
+    transition: background .12s ease, border-color .12s ease, color .12s ease;
+  }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .marca-opt {
+    width: 17px;
+    height: 17px;
+    flex: none;
+    border: 2px solid var(--line-strong);
+    background: var(--surface);
+  }
+  .opt[data-multi="0"] .marca-opt { border-radius: 50%; }
+  .opt[data-multi="1"] .marca-opt { border-radius: 4px; }
+  .opt.sel { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); font-weight: 600; }
+  .opt.sel .marca-opt { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 3px var(--surface); }
+  .opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .rec { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-left: auto; flex: none; }
+
+  .cores { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cores .opt { flex: 1 1 46%; }
+  .amostra { width: 22px; height: 22px; border-radius: 5px; flex: none; border: 1px solid rgba(0,0,0,.15); }
+
+  textarea {
+    width: 100%;
+    font-family: var(--body);
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 74px;
+  }
+  textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .obs-btn {
+    margin-top: 10px;
+    background: none;
+    border: none;
+    padding: 6px 0;
+    font-family: var(--body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  .obs-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .obs-cx { margin-top: 8px; }
+  .obs-cx[hidden] { display: none; }
+  .obs-cx label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; }
+
+  /* ---------- fim ---------- */
+
+  .fim {
+    margin-top: 44px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 16px;
+    box-shadow: var(--shadow);
+  }
+  .fim h2 {
+    font-family: var(--display);
+    font-size: 18px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+  .fim p { margin: 0 0 16px; color: var(--muted); font-size: 15px; }
+  .acoes { display: flex; flex-wrap: wrap; gap: 10px; }
+  button.bt {
+    font-family: var(--body);
+    font-size: 16px;
+    font-weight: 700;
+    padding: 14px 18px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    flex: 1 1 100%;
+  }
+  .bt-1 { background: var(--accent); color: var(--accent-ink); }
+  .bt-2 { background: var(--surface-2); color: var(--ink); border-color: var(--line-strong); }
+  .bt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .aviso { margin-top: 14px; font-size: 14.5px; color: var(--accent); font-weight: 600; min-height: 20px; }
+  .saida { margin-top: 14px; }
+  .saida[hidden] { display: none; }
+  .saida textarea { min-height: 220px; font-size: 13px; }
+
+  .rodape { margin-top: 26px; text-align: center; font-size: 13px; color: var(--muted); }
+  .rodape button {
+    background: none; border: none; color: var(--muted);
+    text-decoration: underline; cursor: pointer; font-size: 13px; font-family: var(--body);
+  }
+
+  @media (min-width: 560px) {
+    .opt { flex: 1 1 calc(50% - 4px); }
+    .opt.longa { flex: 1 1 100%; }
+    button.bt { flex: 1 1 auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<header class="capa">
+  <div class="wrap">
+    <p class="marca">MagoScout</p>
+    <h1>Como o app tem que funcionar</h1>
+    <p>Fessô, essas são as perguntas pra eu montar o app do jeito certo. É só ir tocando nas respostas — cerca de 5 minutos.</p>
+    <p>Se fechar no meio, as respostas ficam salvas no seu celular. No fim tem um botão que gera o texto pronto pra você mandar no zap.</p>
+    <p class="assinatura">Onde a alternativa não encaixar direito, usa o campo de observação.</p>
+  </div>
+</header>
+
+<div class="barra">
+  <div class="wrap">
+    <div class="trilho"><div class="preenche" id="preenche"></div></div>
+    <div class="contador" id="contador">0 / 0</div>
+  </div>
+</div>
+
+<main class="wrap" id="form"></main>
+
+<div class="wrap">
+  <section class="fim">
+    <h2>Terminou?</h2>
+    <p>Toca em copiar e cola no WhatsApp. Não precisa responder tudo — o que ficar em branco eu pergunto depois.</p>
+    <div class="acoes">
+      <button class="bt bt-1" id="copiar" type="button">Copiar respostas</button>
+      <button class="bt bt-2" id="baixar" type="button" hidden>Baixar em arquivo</button>
+    </div>
+    <div class="aviso" id="aviso"></div>
+    <div class="saida" id="saida" hidden>
+      <textarea id="texto" readonly></textarea>
+    </div>
+    <div class="rodape">
+      <button type="button" id="limpar">apagar tudo e começar de novo</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var SECOES = [
+    {
+      titulo: "Ações e regras",
+      qs: [
+        {
+          t: "Quando o jogador faz gol, hoje você aperta “Finalização Certa”?",
+          o: ["É isso, gol e chute certo são o mesmo botão",
+              "Quero um botão GOL separado|rec",
+              "Quero os dois: GOL e CHUTE NO ALVO, separados"]
+        },
+        {
+          t: "Quer registrar assistência (o passe que gerou o gol)?",
+          o: ["Sim", "Não precisa", "Seria bom, mas não é prioridade"]
+        },
+        {
+          t: "O botão “Defesa” é usado pra quem?",
+          o: ["Só pro goleiro", "Goleiro e jogador de linha (bloqueio, corte)"]
+        },
+        {
+          t: "O goleiro precisa de estatísticas próprias?",
+          d: "Hoje ele aparece com as mesmas colunas dos outros.",
+          o: ["Sim: defesa, gol sofrido e reposição certa/errada",
+              "Sim, mas só defesa e gol sofrido",
+              "Não, pode ficar igual aos outros"]
+        },
+        {
+          t: "O botão “Falta” marca o quê?",
+          o: ["Falta que o jogador cometeu",
+              "Falta que ele sofreu",
+              "As duas coisas, em botões separados"]
+        },
+        {
+          t: "Quer o contador de faltas do time (a regra das 5 por tempo)?",
+          o: ["Sim, e quero um aviso quando chegar na 4ª|rec",
+              "Sim, só o número na tela",
+              "Não preciso"]
+        },
+        {
+          t: "Registrar cartão amarelo e vermelho?",
+          o: ["Sim", "Não precisa"]
+        },
+        {
+          t: "Quer poder criar botões de ação novos sozinho, depois?",
+          d: "Ex.: inventar um “desarme” no meio da temporada sem depender de mim.",
+          o: ["Sim, quero mexer nisso sozinho",
+              "Não, essas ações já bastam",
+              "Prefiro te pedir quando precisar"]
+        },
+        {
+          t: "Bola Roubada, Falta e Defesa são contadas sozinhas, sem um par de “errado”. Falta algum contrário aí?",
+          d: "Ex.: “bola perdida” como o contrário de “bola roubada”.",
+          o: ["Sim, quero registrar bola perdida também",
+              "Sim, outra coisa (te falo na observação)",
+              "Não, do jeito que está resolve"]
+        },
+        {
+          t: "Além das ações, o que o app tem que guardar de cada partida?",
+          m: true,
+          o: ["Adversário", "Placar", "Data", "Campeonato", "Local",
+              "Se foi jogo oficial, amistoso ou treino"]
+        }
+      ]
+    },
+    {
+      titulo: "Tempo em quadra",
+      qs: [
+        {
+          t: "Como o tempo de cada jogador deve ser contado?",
+          d: "Na planilha a coluna Tempo está zerada e sem nenhuma fórmula, então não deu pra ver como ela era preenchida. Se era na mão, me conta na observação.",
+          o: ["Automático: eu marco quem entra e quem sai, o app cronometra|rec",
+              "Manual: eu ligo e desligo o cronômetro de cada um",
+              "Não preciso desse dado"]
+        },
+        {
+          t: "O app precisa ter o cronômetro do jogo?",
+          o: ["Sim, com play e pause (2×20 cronometrados)",
+              "Sim, mas corrido, sem parar",
+              "Não, uso o cronômetro do ginásio"]
+        },
+        {
+          t: "Quer ver as estatísticas separadas por tempo de jogo?",
+          o: ["Sim, 1º e 2º tempo separados|rec",
+              "Sim, e prorrogação também",
+              "Só o total do jogo"]
+        }
+      ]
+    },
+    {
+      titulo: "Durante o jogo",
+      qs: [
+        {
+          t: "Quantas pessoas vão registrar ao mesmo tempo?",
+          d: "Se forem duas no mesmo jogo, eu preciso preparar o app pra juntar os dois celulares.",
+          o: ["Uma só", "Duas, dividindo as ações", "Depende do jogo"]
+        },
+        {
+          t: "Tem internet boa no ginásio?",
+          d: "De qualquer jeito o app vai funcionar sem internet. É só pra eu saber o quanto apostar nisso.",
+          o: ["Quase nunca pega", "Às vezes", "Sim, wifi bom"]
+        },
+        {
+          t: "Em qual aparelho você vai usar?",
+          m: true,
+          o: ["Celular Android", "iPhone", "Tablet Android", "iPad"]
+        },
+        {
+          chave: true,
+          t: "Com 15 jogadores, o que é mais rápido pra você?",
+          d: "É a decisão que mais muda a cara da tela principal.",
+          o: ["Ver os 15 de uma vez, com botões menores (igual a planilha)",
+              "Só os 5 que estão em quadra, com botões grandes|rec",
+              "Tocar no jogador primeiro e aí escolher a ação"]
+        }
+      ]
+    },
+    {
+      titulo: "Elenco",
+      qs: [
+        {
+          t: "O que vai na ficha do jogador?",
+          m: true,
+          o: ["Número", "Nome", "Apelido", "Posição (goleiro, fixo, ala, pivô)",
+              "Foto", "Pé dominante", "Data de nascimento"]
+        },
+        {
+          t: "O elenco é fixo ou você monta a lista a cada jogo?",
+          o: ["Fixo, sempre os mesmos",
+              "Monto a relação de cada jogo (quem foi convocado)|rec",
+              "Fixo, mas quero marcar quem faltou"]
+        }
+      ]
+    },
+    {
+      titulo: "O que você quer enxergar",
+      qs: [
+        {
+          chave: true,
+          t: "Acabou o jogo. Qual a PRIMEIRA coisa que você quer ver na tela?",
+          o: ["O aproveitamento de cada jogador",
+              "Como o time foi no 1º tempo contra o 2º",
+              "Quem caiu de rendimento em relação aos outros jogos",
+              "O placar de ações: acertos contra erros do time"]
+        },
+        {
+          t: "Quais decisões você quer tomar olhando os gráficos?",
+          m: true,
+          o: ["Quem começa jogando no próximo jogo",
+              "O que treinar durante a semana",
+              "Quem está evoluindo e quem está caindo",
+              "Ajuste tático no intervalo",
+              "Conversa individual com o atleta",
+              "Mostrar pro grupo em reunião"]
+        },
+        {
+          t: "Qual comparação te ajuda mais?",
+          m: true,
+          o: ["Um jogador contra o outro",
+              "O jogador contra a média do time",
+              "O jogador contra ele mesmo, jogo a jogo",
+              "O time contra ele mesmo em jogos anteriores"]
+        },
+        {
+          t: "“Regularidade”, pra você, é o quê?",
+          o: ["O cara render igual em todo jogo",
+              "O cara render igual do 1º ao 2º tempo",
+              "As duas coisas"]
+        },
+        {
+          t: "Quem joga mais tempo acumula mais números naturalmente. Como comparar?",
+          d: "Ex.: um que jogou 40 min com 8 passes certos rende menos que um que jogou 10 min com 5.",
+          o: ["Por minuto jogado, fica mais justo|rec",
+              "Pelo número total mesmo",
+              "Quero ver os dois lados"]
+        },
+        {
+          t: "Precisa tirar relatório pra reunião?",
+          m: true,
+          o: ["Sim, PDF pra projetar",
+              "Sim, imagem pra mandar no grupo",
+              "Não, mostro na tela do próprio celular"]
+        },
+        {
+          t: "Os jogadores podem ver as estatísticas?",
+          o: ["Não, só a comissão técnica",
+              "Sim, cada um vê só a dele",
+              "Sim, e podem ver o ranking do time"]
+        }
+      ]
+    },
+    {
+      titulo: "A parte da IA",
+      qs: [
+        {
+          t: "Você falou da IA que dava dicas. O que seria mais útil?",
+          d: "Isso fica pro final do desenvolvimento, mas já quero saber pra que lado apontar.",
+          m: true,
+          o: ["Sugerir o que treinar na semana",
+              "Sugerir ajuste tático pro intervalo",
+              "Escrever a análise do jogo",
+              "Apontar quem está caindo de rendimento",
+              "Sinceramente, não faço questão"]
+        }
+      ]
+    },
+    {
+      titulo: "A planilha de hoje",
+      qs: [
+        {
+          chave: true,
+          t: "Hoje, o que você faz com os números depois do jogo, antes de apertar LIMPAR?",
+          d: "Na planilha não tem nada ligando a aba Info na aba Total, então imagino que essa passagem seja na mão.",
+          o: ["Copio e colo na aba Total na mão",
+              "Tiro print ou anoto em outro lugar",
+              "Sinceramente, se perde mesmo",
+              "Nunca cheguei a usar em jogo de verdade"]
+        },
+        {
+          t: "Vai precisar exportar pro Excel depois?",
+          o: ["Sim, uso a planilha pra outras coisas",
+              "Não, o app substitui de vez",
+              "Só de vez em quando, pra guardar backup"]
+        }
+      ]
+    },
+    {
+      titulo: "A cara do app",
+      qs: [
+        {
+          t: "Tem escudo ou logo do time pra colocar no app?",
+          o: ["Tenho, te mando", "Tem, mas preciso procurar", "Não tem logo"]
+        },
+        {
+          t: "Você pediu azul. Qual desses?",
+          cor: true,
+          o: ["Azul marinho, mais escuro|#0D2B4E",
+              "Azul royal, mais forte|#1263C4",
+              "Azul vivo, mais claro|#2E9BE0",
+              "Escolhe você|#5B7288"]
+        },
+        {
+          t: "O nome do time aparece no app? Qual é?",
+          txt: "Escreve o nome do time (ou deixa em branco se não quiser)"
+        }
+      ]
+    },
+    {
+      titulo: "Por último",
+      qs: [
+        {
+          t: "Tem alguma coisa que eu não perguntei e que faz falta?",
+          txt: "Manda ver, qualquer ideia serve"
+        }
+      ]
+    }
+  ];
+
+  var CHAVE = "magoscout-entrevista-v1";
+  var estado = {};
+  try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch (e) { estado = {}; }
+
+  var form = document.getElementById("form");
+  var total = 0;
+  var perguntas = [];
+
+  SECOES.forEach(function (secao, si) {
+    var sec = document.createElement("section");
+    sec.className = "secao";
+
+    var cab = document.createElement("div");
+    cab.className = "secao-cab";
+    var h2 = document.createElement("h2");
+    h2.textContent = secao.titulo;
+    var cont = document.createElement("span");
+    cont.textContent = secao.qs.length + (secao.qs.length === 1 ? " pergunta" : " perguntas");
+    cab.appendChild(h2);
+    cab.appendChild(cont);
+    sec.appendChild(cab);
+
+    secao.qs.forEach(function (q) {
+      total++;
+      var id = "q" + total;
+      var reg = { id: id, secao: secao.titulo, n: total, t: q.t, multi: !!q.m, txt: !!q.txt };
+      perguntas.push(reg);
+
+      var cx = document.createElement("div");
+      cx.className = "q" + (q.chave ? " chave" : "");
+      cx.id = "cx-" + id;
+
+      var topo = document.createElement("div");
+      topo.className = "q-topo";
+      var num = document.createElement("div");
+      num.className = "num";
+      num.textContent = total;
+      var txt = document.createElement("div");
+      txt.className = "q-txt";
+      txt.textContent = q.t;
+      if (q.d) {
+        var dica = document.createElement("span");
+        dica.className = "q-dica";
+        dica.textContent = q.d;
+        txt.appendChild(dica);
+      }
+      topo.appendChild(num);
+      topo.appendChild(txt);
+      cx.appendChild(topo);
+
+      if (q.txt) {
+        var area = document.createElement("textarea");
+        area.placeholder = q.txt;
+        area.value = estado[id] && estado[id].r ? estado[id].r : "";
+        area.addEventListener("input", function () {
+          guarda(id, "r", area.value.trim());
+        });
+        cx.appendChild(area);
+      } else {
+        var opts = document.createElement("div");
+        opts.className = q.cor ? "cores" : "opts";
+        q.o.forEach(function (bruto, oi) {
+          var partes = bruto.split("|");
+          var rotulo = partes[0];
+          var extra = partes[1] || "";
+          var lab = document.createElement("label");
+          lab.className = "opt" + (rotulo.length > 34 ? " longa" : "");
+          lab.setAttribute("data-multi", q.m ? "1" : "0");
+
+          var inp = document.createElement("input");
+          inp.type = q.m ? "checkbox" : "radio";
+          inp.name = id;
+          inp.value = rotulo;
+
+          var marca = document.createElement("span");
+          marca.className = "marca-opt";
+
+          var span = document.createElement("span");
+          span.textContent = rotulo;
+
+          lab.appendChild(inp);
+          if (q.cor) {
+            var am = document.createElement("span");
+            am.className = "amostra";
+            am.style.background = extra;
+            lab.appendChild(am);
+          } else {
+            lab.appendChild(marca);
+          }
+          lab.appendChild(span);
+
+          if (extra === "rec") {
+            var tag = document.createElement("span");
+            tag.className = "rec";
+            tag.textContent = "sugestão";
+            lab.appendChild(tag);
+          }
+
+          var salvo = estado[id] && estado[id].r;
+          if (q.m ? (Array.isArray(salvo) && salvo.indexOf(rotulo) > -1) : salvo === rotulo) {
+            inp.checked = true;
+            lab.classList.add("sel");
+          }
+
+          inp.addEventListener("change", function () {
+            if (q.m) {
+              var marcadas = [];
+              opts.querySelectorAll("input").forEach(function (o) {
+                o.parentNode.classList.toggle("sel", o.checked);
+                if (o.checked) { marcadas.push(o.value); }
+              });
+              guarda(id, "r", marcadas);
+            } else {
+              opts.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("sel"); });
+              lab.classList.add("sel");
+              guarda(id, "r", rotulo);
+            }
+          });
+
+          opts.appendChild(lab);
+        });
+        cx.appendChild(opts);
+      }
+
+      var btObs = document.createElement("button");
+      btObs.type = "button";
+      btObs.className = "obs-btn";
+      btObs.textContent = "+ observação";
+
+      var caixaObs = document.createElement("div");
+      caixaObs.className = "obs-cx";
+      caixaObs.hidden = true;
+      var lblObs = document.createElement("label");
+      lblObs.textContent = "Quer explicar melhor? (opcional)";
+      var areaObs = document.createElement("textarea");
+      areaObs.value = estado[id] && estado[id].obs ? estado[id].obs : "";
+      areaObs.addEventListener("input", function () {
+        guarda(id, "obs", areaObs.value.trim());
+      });
+      caixaObs.appendChild(lblObs);
+      caixaObs.appendChild(areaObs);
+
+      if (areaObs.value) { caixaObs.hidden = false; btObs.textContent = "− observação"; }
+
+      btObs.addEventListener("click", function () {
+        caixaObs.hidden = !caixaObs.hidden;
+        btObs.textContent = (caixaObs.hidden ? "+" : "−") + " observação";
+        if (!caixaObs.hidden) { areaObs.focus(); }
+      });
+
+      if (!q.txt) {
+        cx.appendChild(btObs);
+        cx.appendChild(caixaObs);
+      } else {
+        cx.appendChild(caixaObs);
+        caixaObs.hidden = true;
+        cx.appendChild(btObs);
+      }
+
+      sec.appendChild(cx);
+    });
+
+    form.appendChild(sec);
+  });
+
+  function guarda(id, campo, valor) {
+    if (!estado[id]) { estado[id] = {}; }
+    estado[id][campo] = valor;
+    try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch (e) {}
+    progresso();
+  }
+
+  function respondida(id) {
+    var v = estado[id] && estado[id].r;
+    if (Array.isArray(v)) { return v.length > 0; }
+    return typeof v === "string" && v.length > 0;
+  }
+
+  function progresso() {
+    var feitas = 0;
+    perguntas.forEach(function (p) {
+      var ok = respondida(p.id);
+      if (ok) { feitas++; }
+      var cx = document.getElementById("cx-" + p.id);
+      if (cx) { cx.classList.toggle("ok", ok); }
+    });
+    document.getElementById("preenche").style.width = (feitas / total * 100) + "%";
+    document.getElementById("contador").textContent = feitas + " / " + total;
+  }
+
+  function montaTexto() {
+    var linhas = ["MAGOSCOUT - RESPOSTAS DO RAUL", ""];
+    var feitas = perguntas.filter(function (p) { return respondida(p.id); }).length;
+    linhas.push("Respondidas: " + feitas + " de " + total);
+    var secaoAtual = "";
+    perguntas.forEach(function (p) {
+      var d = estado[p.id] || {};
+      var r = d.r;
+      var temR = Array.isArray(r) ? r.length > 0 : (typeof r === "string" && r.length > 0);
+      if (!temR && !d.obs) { return; }
+      if (p.secao !== secaoAtual) {
+        secaoAtual = p.secao;
+        linhas.push("");
+        linhas.push("== " + secaoAtual.toUpperCase() + " ==");
+      }
+      linhas.push("");
+      linhas.push(p.n + ") " + p.t);
+      if (temR) {
+        linhas.push("   > " + (Array.isArray(r) ? r.join(" / ") : r));
+      }
+      if (d.obs) {
+        linhas.push("   obs: " + d.obs);
+      }
+    });
+    var faltando = perguntas.filter(function (p) { return !respondida(p.id) && !(estado[p.id] && estado[p.id].obs); });
+    if (faltando.length) {
+      linhas.push("");
+      linhas.push("== EM BRANCO ==");
+      linhas.push(faltando.map(function (p) { return p.n; }).join(", "));
+    }
+    return linhas.join("\n");
+  }
+
+  var aviso = document.getElementById("aviso");
+  var saida = document.getElementById("saida");
+  var campoTexto = document.getElementById("texto");
+
+  document.getElementById("copiar").addEventListener("click", function () {
+    var t = montaTexto();
+    campoTexto.value = t;
+    function mostraManual() {
+      saida.hidden = false;
+      campoTexto.focus();
+      campoTexto.select();
+      aviso.textContent = "Selecionei o texto aí embaixo — segura o dedo em cima e escolhe copiar.";
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(function () {
+        aviso.textContent = "Copiado. Agora é só colar no WhatsApp.";
+        saida.hidden = true;
+      }).catch(mostraManual);
+    } else {
+      mostraManual();
+    }
+  });
+
+  var btBaixar = document.getElementById("baixar");
+  if (window.claude && window.claude.downloads) {
+    btBaixar.hidden = false;
+    btBaixar.addEventListener("click", function () {
+      window.claude.downloads.save({
+        filename: "magoscout-respostas.txt",
+        data: montaTexto()
+      }).then(function () {
+        aviso.textContent = "Arquivo salvo.";
+      }).catch(function (err) {
+        aviso.textContent = err && err.code === "declined"
+          ? "Beleza, não salvei nada. Dá pra copiar o texto no outro botão."
+          : "Não consegui salvar o arquivo. Usa o botão de copiar.";
+      });
+    });
+  }
+
+  document.getElementById("limpar").addEventListener("click", function () {
+    if (!confirm("Apagar todas as respostas e começar do zero?")) { return; }
+    estado = {};
+    try { localStorage.removeItem(CHAVE); } catch (e) {}
+    document.querySelectorAll("input").forEach(function (i) { i.checked = false; });
+    document.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("sel"); });
+    document.querySelectorAll("textarea").forEach(function (a) { if (a.id !== "texto") { a.value = ""; } });
+    saida.hidden = true;
+    aviso.textContent = "";
+    progresso();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  progresso();
+})();
+</script>

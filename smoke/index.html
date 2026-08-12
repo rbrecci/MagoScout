@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MagoScout — diagnóstico do host</title>
+<style>
+  :root {
+    --bg: #EEF4FA;
+    --surface: #fff;
+    --ink: #0A2036;
+    --muted: #5B7288;
+    --line: #D3E0EC;
+    --azul: #2E9BE0;
+    --azul-esc: #0D3C63;
+    --ok: #1D7A4C;
+    --falha: #C0392B;
+    --alerta: #B5762A;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #071523; --surface: #0E2136; --ink: #E6EEF7;
+      --muted: #8CA6BE; --line: #1E3A57; --azul: #55B3F0; --azul-esc: #9FD3F5;
+      --ok: #4FCB8A; --falha: #FF7A6B; --alerta: #E0A75E;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+  header { background: var(--azul-esc); color: #EAF3FD; padding: 24px 0; }
+  @media (prefers-color-scheme: dark) { header { background: #0A2036; } }
+  header .wrap { padding-bottom: 24px; }
+  h1 {
+    margin: 0 0 6px; font-size: 22px; letter-spacing: .04em; text-transform: uppercase;
+  }
+  header p { margin: 0; color: #A9CDEA; font-size: 14.5px; }
+  h2 {
+    font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted); margin: 28px 0 10px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  .item {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 8px; padding: 12px 14px; margin-bottom: 8px;
+  }
+  .selo {
+    flex: none; width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 13px; font-weight: 700;
+    color: #fff; margin-top: 1px;
+  }
+  .selo.ok { background: var(--ok); }
+  .selo.falha { background: var(--falha); }
+  .selo.alerta { background: var(--alerta); }
+  .selo.espera { background: var(--muted); }
+  .nome { font-weight: 600; }
+  .detalhe {
+    display: block; font-weight: 400; font-size: 13.5px; color: var(--muted);
+    margin-top: 3px; word-break: break-word;
+  }
+  .resumo {
+    margin-top: 20px; padding: 16px; border-radius: 8px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 4px solid var(--azul); font-weight: 600;
+  }
+  .resumo small { display: block; font-weight: 400; color: var(--muted); margin-top: 6px; }
+  button {
+    font: inherit; font-weight: 700; padding: 12px 18px; border-radius: 8px;
+    border: none; background: var(--azul); color: #04263F; cursor: pointer;
+    margin-top: 18px;
+  }
+  button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  pre {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px; overflow-x: auto; font-size: 12.5px; margin-top: 10px;
+  }
+  details { margin-top: 16px; }
+  summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>MagoScout · diagnóstico do host</h1>
+    <p>Confere se este servidor aguenta o app antes de a gente construir em cima dele.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <h2>Navegador</h2>
+  <div id="cliente"></div>
+
+  <h2>Servidor</h2>
+  <div id="servidor"><div class="item"><span class="selo espera">…</span><span class="nome">Consultando smoke.php</span></div></div>
+
+  <div class="resumo" id="resumo">Rodando os testes…</div>
+
+  <button type="button" id="repetir">Rodar de novo</button>
+
+  <details>
+    <summary>Resposta crua do servidor</summary>
+    <pre id="cru">aguardando…</pre>
+  </details>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var elCliente = document.getElementById("cliente");
+  var elServidor = document.getElementById("servidor");
+  var elResumo = document.getElementById("resumo");
+  var elCru = document.getElementById("cru");
+
+  function linha(alvo, nome, estado, detalhe) {
+    var div = document.createElement("div");
+    div.className = "item";
+    var selo = document.createElement("span");
+    selo.className = "selo " + estado;
+    selo.textContent = estado === "ok" ? "✓" : estado === "falha" ? "✕" : estado === "alerta" ? "!" : "…";
+    var txt = document.createElement("div");
+    var forte = document.createElement("span");
+    forte.className = "nome";
+    forte.textContent = nome;
+    txt.appendChild(forte);
+    if (detalhe) {
+      var d = document.createElement("span");
+      d.className = "detalhe";
+      d.textContent = detalhe;
+      txt.appendChild(d);
+    }
+    div.appendChild(selo);
+    div.appendChild(txt);
+    alvo.appendChild(div);
+    return div;
+  }
+
+  var falhas = 0, alertas = 0;
+  var terminou = { sw: false, php: false };
+
+  function conta(estado) {
+    if (estado === "falha") { falhas++; }
+    if (estado === "alerta") { alertas++; }
+  }
+
+  // ---------- navegador ----------
+
+  var https = location.protocol === "https:";
+  conta(https ? "ok" : "falha");
+  linha(elCliente, "Página servida por HTTPS", https ? "ok" : "falha",
+        https ? location.origin : "está em " + location.protocol + " — o service worker não registra assim");
+
+  var temSW = "serviceWorker" in navigator;
+  conta(temSW ? "ok" : "falha");
+  linha(elCliente, "Navegador suporta service worker", temSW ? "ok" : "falha");
+
+  var temIDB = "indexedDB" in window;
+  conta(temIDB ? "ok" : "falha");
+  linha(elCliente, "IndexedDB disponível", temIDB ? "ok" : "falha", "é onde os eventos ficam quando não tem rede");
+
+  var regLinha = linha(elCliente, "Service worker registrou", "espera", null);
+
+  function atualiza(div, nome, estado, detalhe) {
+    div.innerHTML = "";
+    var selo = document.createElement("span");
+    selo.className = "selo " + estado;
+    selo.textContent = estado === "ok" ? "✓" : estado === "falha" ? "✕" : "!";
+    var txt = document.createElement("div");
+    var forte = document.createElement("span");
+    forte.className = "nome";
+    forte.textContent = nome;
+    txt.appendChild(forte);
+    if (detalhe) {
+      var d = document.createElement("span");
+      d.className = "detalhe";
+      d.textContent = detalhe;
+      txt.appendChild(d);
+    }
+    div.appendChild(selo);
+    div.appendChild(txt);
+    conta(estado);
+  }
+
+  if (temSW && https) {
+    navigator.serviceWorker.register("sw.js")
+      .then(function (reg) {
+        atualiza(regLinha, "Service worker registrou", "ok", "escopo " + reg.scope);
+        fecha();
+      })
+      .catch(function (err) {
+        atualiza(regLinha, "Service worker registrou", "falha", String(err && err.message || err));
+        fecha();
+      });
+  } else {
+    atualiza(regLinha, "Service worker registrou", "falha", "sem HTTPS ou sem suporte");
+    fecha();
+  }
+
+  // ---------- servidor ----------
+
+  function fecha() {
+    terminou.sw = true;
+    if (terminou.php) { resumo(); }
+  }
+
+  function resumo() {
+    if (falhas > 0) {
+      elResumo.style.borderLeftColor = "var(--falha)";
+      elResumo.innerHTML = falhas + " teste(s) falharam. Este host não serve como está." +
+        "<small>Manda o resultado pro Claude que a gente decide o que fazer.</small>";
+    } else if (alertas > 0) {
+      elResumo.style.borderLeftColor = "var(--alerta)";
+      elResumo.innerHTML = "Passou, com " + alertas + " ressalva(s)." +
+        "<small>Dá pra construir. As ressalvas limitam alguma fase mais pra frente.</small>";
+    } else {
+      elResumo.style.borderLeftColor = "var(--ok)";
+      elResumo.innerHTML = "Tudo passou. O host aguenta o MagoScout." +
+        "<small>Pode mandar ver no schema do banco.</small>";
+    }
+  }
+
+  function testaServidor() {
+    elServidor.innerHTML = "";
+    var pendente = linha(elServidor, "Consultando smoke.php", "espera", null);
+
+    fetch("smoke.php", { headers: { "Accept": "application/json" } })
+      .then(function (resp) {
+        return resp.text().then(function (texto) {
+          return { status: resp.status, tipo: resp.headers.get("content-type") || "", texto: texto };
+        });
+      })
+      .then(function (resp) {
+        elCru.textContent = resp.texto.slice(0, 4000);
+        elServidor.innerHTML = "";
+
+        var dados;
+        try {
+          dados = JSON.parse(resp.texto);
+        } catch (e) {
+          // Se voltou HTML, quase sempre é a camada anti-bot do host respondendo no lugar do PHP.
+          conta("falha");
+          linha(elServidor, "Resposta é JSON", "falha",
+                "voltou " + (resp.tipo || "sem content-type") + " com status " + resp.status +
+                ". Se for uma página HTML, é a proteção anti-bot do host interceptando a requisição.");
+          terminou.php = true;
+          if (terminou.sw) { resumo(); }
+          return;
+        }
+
+        conta("ok");
+        linha(elServidor, "fetch() recebe JSON do PHP", "ok", "status " + resp.status);
+
+        dados.checks.forEach(function (c) {
+          var estado = c.ok ? "ok" : (c.nome.indexOf("externa") > -1 ? "alerta" : "falha");
+          conta(estado);
+          linha(elServidor, c.nome, estado, c.detalhe);
+        });
+
+        if (dados.ambiente) {
+          var amb = Object.keys(dados.ambiente).map(function (k) {
+            return k + ": " + dados.ambiente[k];
+          }).join("  ·  ");
+          linha(elServidor, "Ambiente", "ok", amb);
+        }
+
+        // POST com corpo JSON: é assim que a fila de eventos vai subir.
+        return fetch("smoke.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ping: "evento de teste", acento: "ação" })
+        }).then(function (r2) {
+          return r2.text();
+        }).then(function (t2) {
+          var d2;
+          try { d2 = JSON.parse(t2); } catch (e) { d2 = null; }
+          var achou = d2 && d2.checks && d2.checks.filter(function (c) {
+            return c.nome.indexOf("corpo JSON") > -1;
+          })[0];
+          var estado = achou && achou.ok ? "ok" : "falha";
+          conta(estado);
+          linha(elServidor, "POST com corpo JSON chega inteiro no PHP", estado,
+                achou ? achou.detalhe : "o POST não voltou JSON válido");
+        });
+      })
+      .catch(function (err) {
+        elServidor.innerHTML = "";
+        conta("falha");
+        linha(elServidor, "Consultar smoke.php", "falha", String(err && err.message || err));
+      })
+      .then(function () {
+        terminou.php = true;
+        if (terminou.sw) { resumo(); }
+      });
+  }
+
+  document.getElementById("repetir").addEventListener("click", function () {
+    location.reload();
+  });
+
+  testaServidor();
+})();
+</script>
+</body>
+</html>

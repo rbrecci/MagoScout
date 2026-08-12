@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061A2B">
+<title>MagoScout</title>
+<link rel="stylesheet" href="css/magoscout.css">
+<style>
+  .capa {
+    background: linear-gradient(165deg, #0E4E86 0%, #072A47 62%, #061A2B 100%);
+    padding: 26px 14px 22px;
+    border-bottom: 1px solid var(--linha);
+  }
+  .capa h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: .02em;
+  }
+  .capa h1 span { color: var(--azul); }
+  .capa p { margin: 6px 0 0; color: var(--ink-fraco); font-size: 14px; }
+  .continuar {
+    display: block;
+    text-decoration: none;
+    background: var(--certo);
+    color: #04241A;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .continuar strong { display: block; font-size: 17px; }
+  .continuar span { font-size: 13px; opacity: .8; }
+  a.bloco { text-decoration: none; color: inherit; display: block; }
+  .barra-sync {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card);
+    border: 1px solid var(--linha);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .barra-sync .corpo { flex: 1; min-width: 0; }
+  .barra-sync .estado { display: block; font-size: 13.5px; font-weight: 700; }
+  .barra-sync .detalhe { display: block; font-size: 11.5px; color: var(--ink-fraco); margin-top: 2px; }
+  .barra-sync .ponto { color: var(--certo); }
+  .barra-sync .ponto.espera { color: var(--ouro); }
+  .barra-sync .ponto.longe { color: var(--ink-fraco); }
+  .bt-mini {
+    flex: none;
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 8px;
+    background: var(--card-alto);
+    font-weight: 700;
+    font-size: 13.5px;
+    text-decoration: none;
+    color: inherit;
+    display: grid;
+    place-items: center;
+  }
+  .bt-mini:disabled { opacity: .5; }
+  .linha-link { display: flex; gap: 6px; }
+  .linha-link input {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    background: var(--card);
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+    color: var(--ink-fraco);
+    font: inherit;
+    font-size: 12.5px;
+    padding: 8px 10px;
+  }
+</style>
+</head>
+<body>
+
+<header class="capa">
+  <h1>Mago<span>Scout</span></h1>
+  <p id="assinatura">Scout de futsal</p>
+</header>
+
+<main class="conteudo">
+  <div id="ativa"></div>
+
+  <div class="barra-sync">
+    <div class="corpo">
+      <span class="estado" id="sync-estado">Só neste aparelho</span>
+      <span class="detalhe" id="sync-detalhe">verificando o servidor</span>
+    </div>
+    <button type="button" class="bt-mini" id="sync-agora" hidden>Sincronizar</button>
+    <a class="bt-mini" href="login.html" id="sync-entrar" hidden>Entrar</a>
+  </div>
+
+  <a class="bt-principal bloco" href="partida.html" style="display:grid;place-items:center">Nova partida</a>
+  <a class="bt-secundario bloco" href="elenco.html" style="display:grid;place-items:center">Elenco</a>
+
+  <p class="secao-titulo">Partidas</p>
+  <div class="lista" id="historico"></div>
+
+  <div id="area-publica" hidden>
+    <p class="secao-titulo">Link dos jogadores</p>
+    <div class="linha-link">
+      <input type="text" id="link-publico" readonly aria-label="Link público somente leitura">
+      <button type="button" class="bt-mini" id="copiar-link">Copiar</button>
+    </div>
+    <p class="dica" style="margin-top:8px">Somente leitura, sem senha. Quem tem o link
+      vê as estatísticas e o ranking — e mais nada. A página não entra em buscador.</p>
+  </div>
+</main>
+
+<script src="js/db.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/api.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/inicio.js"></script>
+</body>
+</html>

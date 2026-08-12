@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061A2B">
+<title>MagoScout — nova partida</title>
+<link rel="stylesheet" href="css/magoscout.css">
+</head>
+<body>
+
+<header class="barra">
+  <a class="bt-voltar" href="index.html" aria-label="Voltar" style="display:grid;place-items:center;text-decoration:none">‹</a>
+  <h1>Nova partida<small id="passo">dados do jogo</small></h1>
+</header>
+
+<main class="conteudo">
+  <form id="form" autocomplete="off">
+    <div class="campo">
+      <label for="adversario">Adversário</label>
+      <input type="text" id="adversario" maxlength="80" placeholder="Contra quem">
+    </div>
+
+    <div class="dupla">
+      <div class="campo">
+        <label for="data">Data</label>
+        <input type="date" id="data" required>
+      </div>
+      <div class="campo">
+        <label for="tipo">Tipo</label>
+        <select id="tipo">
+          <option value="oficial" selected>Oficial</option>
+          <option value="amistoso">Amistoso</option>
+          <option value="treino">Treino</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="campeonato">Campeonato</label>
+      <input type="text" id="campeonato" maxlength="80" placeholder="Opcional">
+    </div>
+
+    <div class="dupla">
+      <div class="campo">
+        <label for="periodos">Tempos</label>
+        <select id="periodos">
+          <option value="2" selected>2 tempos</option>
+          <option value="1">1 tempo só</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="minutos">Minutos por tempo</label>
+        <input type="number" id="minutos" inputmode="numeric" min="1" max="60" value="20" required>
+      </div>
+    </div>
+    <p class="dica">O cronômetro para no fim de cada tempo. Dá para rodar 2×20, 2×18, 2×16, o que o jogo pedir.</p>
+
+    <p class="secao-titulo">Quem foi relacionado <span id="qtd-convocados"></span></p>
+    <div class="lista" id="elenco"></div>
+  </form>
+</main>
+
+<div class="rodape-fixo">
+  <button type="button" class="bt-principal" id="comecar" disabled>Começar o jogo</button>
+</div>
+
+<script src="js/db.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/partida.js"></script>
+</body>
+</html>

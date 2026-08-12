@@ -1,0 +1,17 @@
+# Credenciais do banco. Cada instalação preenche as suas a partir dos
+# arquivos `config.exemplo.php` versionados ao lado.
+app/api/config.php
+smoke/config.php
+
+# Sistema e editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*~
+
+# Nada de dependência baixada: o app não tem nenhuma, e é para continuar assim.
+node_modules/
+vendor/

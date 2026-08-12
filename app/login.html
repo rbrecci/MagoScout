@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061A2B">
+<meta name="robots" content="noindex">
+<title>Entrar · MagoScout</title>
+<link rel="stylesheet" href="css/magoscout.css">
+</head>
+<body>
+
+<header class="barra">
+  <a class="bt-voltar" href="index.html" aria-label="Voltar" style="display:grid;place-items:center;text-decoration:none">←</a>
+  <h1 id="titulo">Comissão técnica<small id="subtitulo">verificando o servidor</small></h1>
+</header>
+
+<main class="conteudo">
+
+  <form id="form-login" hidden>
+    <div class="campo">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" autocomplete="username" required>
+    </div>
+    <div class="campo">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="bt-principal" id="bt-entrar">Entrar</button>
+  </form>
+
+  <form id="form-instalar" hidden>
+    <p class="dica">Primeiro acesso: esta conta vira a da comissão técnica. Depois
+      disso, esta tela some e só existe login.</p>
+    <div class="campo">
+      <label for="time">Nome do time</label>
+      <input type="text" id="time" autocomplete="off" required>
+    </div>
+    <div class="campo">
+      <label for="nome">Seu nome</label>
+      <input type="text" id="nome" autocomplete="name" required>
+    </div>
+    <div class="campo">
+      <label for="email-novo">E-mail</label>
+      <input type="email" id="email-novo" autocomplete="username" required>
+    </div>
+    <div class="campo">
+      <label for="senha-nova">Senha (mínimo 8 caracteres)</label>
+      <input type="password" id="senha-nova" autocomplete="new-password" minlength="8" required>
+    </div>
+    <button type="submit" class="bt-principal" id="bt-instalar">Criar a conta</button>
+  </form>
+
+  <div id="logado" hidden>
+    <p class="dica" id="quem"></p>
+    <button type="button" class="bt-secundario bt-perigo" id="bt-sair">Sair desta conta</button>
+  </div>
+
+  <p class="nada" id="recado"></p>
+
+</main>
+
+<script src="js/db.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/api.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>
