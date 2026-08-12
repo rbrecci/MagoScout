@@ -1,5 +1,5 @@
 // Análise de uma partida. Abre pelo histórico com ?p=<uuid>.
-// A pergunta que esta tela responde primeiro é 1º contra 2º tempo — foi a
+// A pergunta que esta tela responde primeiro é 1º contra 2º tempo, que foi a
 // primeira coisa que o Raul pediu para ver depois do jogo.
 
 (function () {
@@ -15,8 +15,8 @@
 
   // ------------------------------------------------ formatação
 
-  function fmtPct(v) { return v === null ? '—' : v + '%'; }
-  function fmtMin(v) { return v === null ? '—' : v.toFixed(1); }
+  function fmtPct(v) { return v === null ? '-' : v + '%'; }
+  function fmtMin(v) { return v === null ? '-' : v.toFixed(1); }
   function mmss(s) { return Estatisticas.mmss(s); }
 
   function nomeRecorte(r) {
@@ -42,7 +42,7 @@
     var s = document.createElement('span');
     s.className = 'v';
     s.textContent = valor === null || valor === undefined
-      ? '—'
+      ? '-'
       : (tipo === 'pct' ? valor + '%' : String(valor));
     return s;
   }
@@ -51,7 +51,7 @@
     var chip = document.createElement('span');
     chip.className = 'delta';
     if (a === null || b === null || a === undefined || b === undefined) {
-      chip.textContent = '—';
+      chip.textContent = '-';
       chip.classList.add('igual');
       return chip;
     }
@@ -63,7 +63,7 @@
     }
     var melhorou = linha.maiorMelhor ? d > 0 : d < 0;
     chip.classList.add(melhorou ? 'subiu' : 'caiu');
-    chip.textContent = (d > 0 ? '+' : '−') + Math.abs(d) + (linha.tipo === 'pct' ? '%' : '');
+    chip.textContent = (d > 0 ? '+' : '-') + Math.abs(d) + (linha.tipo === 'pct' ? '%' : '');
     return chip;
   }
 
@@ -401,7 +401,7 @@
       return fmtMin(Estatisticas.porMinuto(f.acoes[c], f.segundos[c]));
     }), true));
 
-    // Só entra a taxa de quem tentou: linha de "—" em todo lugar é ruído na
+    // Só entra a taxa de quem tentou: linha vazia em todo lugar é ruído na
     // conversa com o jogador.
     var taxas = [
       { rotulo: 'Finalização', chave: 'finalizacao' },

@@ -2,7 +2,7 @@
 // partida, com ?j=<uuid>.
 //
 // Responde as duas perguntas que sobraram da fase 2: como ele está em relação à
-// média do time, e como ele está em relação a ele mesmo — que é o que o Raul
+// média do time, e como ele está em relação a ele mesmo, que é o que o Raul
 // chama de regularidade.
 
 (function () {
@@ -18,7 +18,7 @@
   // ------------------------------------------------ formatação
 
   function fmt(v) {
-    if (v === null || v === undefined) { return '—'; }
+    if (v === null || v === undefined) { return '-'; }
     if (metrica.formato === 'tempo') { return Estatisticas.mmss(v); }
     return Grafico.fmt(v, metrica.formato);
   }
@@ -96,7 +96,7 @@
     el.tiles.appendChild(tile(jogou + ' de ' + jogos.length, 'jogos com número'));
 
     var d = Estatisticas.desvio(dele);
-    el.tiles.appendChild(tile(d === null ? '—' : '±' + fmt(d), 'variação típica'));
+    el.tiles.appendChild(tile(d === null ? '-' : '±' + fmt(d), 'variação típica'));
   }
 
   // Regularidade para o Raul são duas coisas, e as duas ficam aqui: a variação
@@ -123,7 +123,7 @@
     linhas.push(['Pior jogo', fmt(Math.min.apply(null, valores))]);
 
     // Do 1º para o 2º tempo: média da diferença jogo a jogo, não a diferença
-    // das médias — assim um jogo em que ele não entrou no 2º tempo não puxa a
+    // das médias. Assim um jogo em que ele não entrou no 2º tempo não puxa a
     // conta para baixo.
     var difs = [];
     jogos.forEach(function (jogo) {
@@ -136,12 +136,12 @@
     });
     var dif = Estatisticas.media(difs);
     if (dif === null) {
-      linhas.push(['Do 1º para o 2º tempo', '—']);
+      linhas.push(['Do 1º para o 2º tempo', '-']);
     } else {
       // Sinal só quando a diferença sobrevive ao arredondamento: "+0.0" não
       // quer dizer nada.
       var corpo = fmt(Math.abs(dif));
-      var sinal = corpo === fmt(0) ? '' : (dif > 0 ? '+' : '−');
+      var sinal = corpo === fmt(0) ? '' : (dif > 0 ? '+' : '-');
       linhas.push(['Do 1º para o 2º tempo', sinal + corpo]);
     }
 
@@ -198,7 +198,7 @@
       [1, 2, 'total'].forEach(function (c) {
         var s = document.createElement('span');
         s.className = 'v';
-        s.textContent = (f && f.participou) ? fmt(metrica.valor(f, c)) : '—';
+        s.textContent = (f && f.participou) ? fmt(metrica.valor(f, c)) : '-';
         a.appendChild(s);
       });
       el.jogos.appendChild(a);
@@ -286,7 +286,7 @@
       el.subtitulo.textContent = '#' + (jogador.numero === null ? '--' : jogador.numero) +
         ' · ' + jogador.posicao + ' · ' + jogos.length +
         (jogos.length === 1 ? ' jogo' : ' jogos');
-      el.nota.textContent = 'Buraco na linha é jogo em que ele não entrou em quadra — ' +
+      el.nota.textContent = 'Buraco na linha é jogo em que ele não entrou em quadra, ' +
         'não é zero. Variação típica menor quer dizer mais constante.';
 
       renderMetricas();

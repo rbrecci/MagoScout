@@ -1,4 +1,4 @@
--- MagoScout — schema
+-- MagoScout: schema
 -- MySQL 5.7+ / MariaDB 10.4+, InnoDB, utf8mb4.
 --
 -- Dois princípios mandam neste desenho:
@@ -56,7 +56,7 @@ CREATE TABLE jogador (
     criado_em DATETIME     NOT NULL,
     -- Carimbo do servidor. É o relógio da sincronização: o celular pergunta
     -- "o que mudou depois de tal instante" e compara com este campo, nunca com
-    -- o relógio local — dois aparelhos nunca concordam sobre que horas são.
+    -- o relógio local, porque dois aparelhos nunca concordam sobre que horas são.
     recebido_em DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY ix_time_ativo (time_id, ativo),
     KEY ix_recebido (time_id, recebido_em),

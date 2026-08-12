@@ -1,7 +1,7 @@
 <?php
 // Dados do link público dos jogadores. Somente leitura, sem conta e sem senha:
 // o token longo na URL é o obstáculo, e é por isso que a página vai com
-// noindex — são nomes de menores com dados de desempenho, não podem cair em
+// noindex, porque são nomes de menores com dados de desempenho e não podem cair em
 // buscador.
 
 declare(strict_types=1);

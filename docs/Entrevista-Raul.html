@@ -1,4 +1,4 @@
-<title>MagoScout — Entrevista com o técnico</title>
+<title>MagoScout: entrevista com o técnico</title>
 <style>
   :root {
     color-scheme: light dark;
@@ -351,7 +351,7 @@
   <div class="wrap">
     <p class="marca">MagoScout</p>
     <h1>Como o app tem que funcionar</h1>
-    <p>Fessô, essas são as perguntas pra eu montar o app do jeito certo. É só ir tocando nas respostas — cerca de 5 minutos.</p>
+    <p>Fessô, essas são as perguntas pra eu montar o app do jeito certo. É só ir tocando nas respostas, leva uns 5 minutos.</p>
     <p>Se fechar no meio, as respostas ficam salvas no seu celular. No fim tem um botão que gera o texto pronto pra você mandar no zap.</p>
     <p class="assinatura">Onde a alternativa não encaixar direito, usa o campo de observação.</p>
   </div>
@@ -369,7 +369,7 @@
 <div class="wrap">
   <section class="fim">
     <h2>Terminou?</h2>
-    <p>Toca em copiar e cola no WhatsApp. Não precisa responder tudo — o que ficar em branco eu pergunto depois.</p>
+    <p>Toca em copiar e cola no WhatsApp. Não precisa responder tudo, o que ficar em branco eu pergunto depois.</p>
     <div class="acoes">
       <button class="bt bt-1" id="copiar" type="button">Copiar respostas</button>
       <button class="bt bt-2" id="baixar" type="button" hidden>Baixar em arquivo</button>
@@ -786,11 +786,11 @@
       caixaObs.appendChild(lblObs);
       caixaObs.appendChild(areaObs);
 
-      if (areaObs.value) { caixaObs.hidden = false; btObs.textContent = "− observação"; }
+      if (areaObs.value) { caixaObs.hidden = false; btObs.textContent = "- observação"; }
 
       btObs.addEventListener("click", function () {
         caixaObs.hidden = !caixaObs.hidden;
-        btObs.textContent = (caixaObs.hidden ? "+" : "−") + " observação";
+        btObs.textContent = (caixaObs.hidden ? "+" : "-") + " observação";
         if (!caixaObs.hidden) { areaObs.focus(); }
       });
 
@@ -878,7 +878,7 @@
       saida.hidden = false;
       campoTexto.focus();
       campoTexto.select();
-      aviso.textContent = "Selecionei o texto aí embaixo — segura o dedo em cima e escolhe copiar.";
+      aviso.textContent = "Selecionei o texto aí embaixo, segura o dedo em cima e escolhe copiar.";
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(t).then(function () {

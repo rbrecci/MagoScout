@@ -1,6 +1,6 @@
 <?php
 // Quem está logado. O app pergunta isto ao abrir para saber se pode
-// sincronizar — e segue funcionando offline se a resposta não vier.
+// sincronizar, e segue funcionando offline se a resposta não vier.
 
 declare(strict_types=1);
 

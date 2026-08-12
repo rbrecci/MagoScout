@@ -1,4 +1,4 @@
-# MagoScout — contexto para retomar em outra sessão
+# MagoScout: contexto para retomar em outra sessão
 
 Última atualização: 12/08/2026. Substitui o `CONTEXTO.md` que ficava na raiz.
 
@@ -13,7 +13,7 @@ gráficos de desempenho e acesso pelos jogadores.
 ```
 MagoScout/
 ├── app/      o aplicativo (é isto que vai para o servidor)
-├── docs/     esta pasta — o que o app faz, como e por quê
+├── docs/     esta pasta: o que o app faz, como e por quê
 └── smoke/    diagnóstico do host. Descartável depois de rodado.
 ```
 
@@ -29,7 +29,7 @@ MagoScout/
 
 ## Estado: fases 0 a 4 completas e testadas
 
-Falta só a fase 5 (IA). O app funciona **inteiro offline, sem servidor** — e,
+Falta só a fase 5 (IA). O app funciona **inteiro offline, sem servidor** e,
 quando há rede e login, sincroniza entre aparelhos.
 
 ```
@@ -39,11 +39,11 @@ partida.html  dados do jogo + convocação
 scout.html    o jogo ao vivo
 analise.html  os números da partida (?p=<uuid>, abre pelo histórico)
 jogador.html  evolução jogo a jogo (?j=<uuid>, abre pela ficha na análise)
-login.html    entrada da comissão — e o primeiro acesso, que cria a conta
+login.html    entrada da comissão, e o primeiro acesso, que cria a conta
 publico.html  o link somente-leitura dos jogadores (?t=<token>)
 ```
 
-### Fase 1 — o jogo ao vivo
+### Fase 1: o jogo ao vivo
 
 Cadastro com ordenação por posição, edição sem duplicar, exclusão com desfazer,
 convocação com mínimo de 5, partida com minutos configuráveis, quadra com
@@ -54,12 +54,12 @@ reabrindo passagens, encerramento alimentando o histórico.
 **O layout da tela de scout foi aprovado pelo Saker em 11/08.** Pode construir
 em cima dele.
 
-### Fase 2 — a análise da partida
+### Fase 2: a análise da partida
 
 `analise.html` abre por qualquer item do histórico. De cima para baixo:
 
 1. **Placar e resumo.**
-2. **1º contra 2º tempo** — tabela do time com a variação de um tempo para o
+2. **1º contra 2º tempo:** tabela do time com a variação de um tempo para o
    outro. É a primeira coisa que o Raul pediu para ver, então é a primeira
    coisa da tela.
 3. **Recorte de período** (jogo todo · 1º · 2º), que filtra os números do time
@@ -68,34 +68,34 @@ em cima dele.
    taxas resumidas. Toque abre a ficha completa, com uma coluna por período e o
    total, mais a comparação com a média do time.
 
-### Fase 3 — gráficos e relatório em imagem
+### Fase 3: gráficos e relatório em imagem
 
 **Sem biblioteca de gráfico.** O planejamento previa Chart.js; o Saker aprovou
 trocar por um módulo próprio (`js/grafico.js`, canvas 2D) em 11/08. O motivo que
 decidiu: a mesma função que desenha na tela desenha o PNG do relatório, que é
-canvas de qualquer jeito — e o app continua sem nenhuma dependência externa, o
+canvas de qualquer jeito, e o app continua sem nenhuma dependência externa, o
 que num PWA offline hospedado de graça vale mais que tooltip pronto.
 
-- **`js/grafico.js`** — barras agrupadas, barras horizontais com linha de
+- **`js/grafico.js`:** barras agrupadas, barras horizontais com linha de
   referência, linha temporal e legenda. Lê as cores das variáveis do CSS, então
   mudar o tema muda o gráfico.
 - **Na análise:** gráfico do 1º × 2º tempo e comparativo dos jogadores com a
   média do time, com seletor de métrica, respeitando o recorte de período.
-- **`jogador.html`** — evolução jogo a jogo: linha do jogador contra a média do
+- **`jogador.html`:** evolução jogo a jogo, com a linha do jogador contra a média do
   time, médias, **variação típica** (desvio padrão), melhor e pior jogo, a queda
   do 1º para o 2º tempo e a lista de jogos, cada um linkando de volta para a
   análise daquela partida.
-- **`js/relatorio.js`** — o PNG de 1080×1350 (4:5, o retrato que o WhatsApp não
+- **`js/relatorio.js`:** o PNG de 1080×1350 (4:5, o retrato que o WhatsApp não
   corta) para mandar no grupo. Compartilha pela bandeja do sistema quando o
   aparelho oferece `navigator.share`; baixa quando não.
 
-### Fase 4 — servidor, login e link dos jogadores
+### Fase 4: servidor, login e link dos jogadores
 
 A primeira fase que não roda só no celular. API em PHP + PDO, sem framework:
 
 ```
 app/api/
-├── config.php          credenciais e nome do time — NÃO versionado
+├── config.php          credenciais e nome do time (NÃO versionado)
 ├── config.exemplo.php  o modelo a copiar
 ├── comum.php           PDO, sessão, resposta JSON, erro
 ├── instalar.php        cria banco + schema + a primeira conta; se recusa depois disso
@@ -111,7 +111,7 @@ data de outro. Subir a mesma fila duas vezes não duplica nada, porque tudo tem
 UUID gerado no cliente e o INSERT vira UPDATE do mesmo registro.
 
 **Quando sincroniza:** ao abrir a tela inicial, quando a rede volta e no botão
-`Sincronizar`. Não durante o jogo, de propósito — o scout não pode gastar
+`Sincronizar`. Não durante o jogo, de propósito: o scout não pode gastar
 bateria e dados a cada toque, e os eventos ficam salvos localmente até o fim da
 partida.
 
@@ -203,19 +203,19 @@ jogadores × 12 ações não caberem numa tela com "botões grandes".
 
 **`estatisticas.js` não conhece tela nem banco.** Recebe partida, eventos,
 passagens e elenco; devolve números. A análise, os gráficos, o relatório e o
-ranking público leem da mesma função — é o que garante que os quatro nunca
+ranking público leem da mesma função. É o que garante que os quatro nunca
 discordem entre si.
 
-**Percentual sem tentativa é `null`, e a tela mostra "—".** Zero por cento e
+**Percentual sem tentativa é `null`, e a tela mostra um hífen.** Zero por cento e
 "não tentou" são conversas diferentes com o jogador.
 
 **Média do time só compara com jogador quando é taxa.** Em métrica de soma
-(gols, faltas, minutos) o número do time é o total do elenco — pôr um jogador ao
+(gols, faltas, minutos) o número do time é o total do elenco, e pôr um jogador ao
 lado do total dos seis não compara nada. `referenciaDoTime()` divide pelo número
 de quem esteve em quadra; para taxa e percentual devolve o valor direto.
 
 **`acoes` e `acoesJogadores` são coisas diferentes.** A primeira conta tudo que
-foi registrado no jogo, inclusive lateral e escanteio, que não têm dono — é o
+foi registrado no jogo, inclusive lateral e escanteio, que não têm dono. É o
 número da tela ("185 ações"). A segunda deixa os coletivos de fora e é a que
 vale como régua de "ações por minuto", senão o time aparece mais produtivo do
 que qualquer um dos seus jogadores.
@@ -243,13 +243,13 @@ a padrão privilegiada, e a troca fica à vista.
 
 1. **IndexedDB não migra keyPath de índice.** Ao trocar `partida_id` por
    `partida_uuid`, o índice antigo continuou apontando para o campo velho e
-   passou a devolver **lista vazia sem erro nenhum** — o histórico mostrava
+   passou a devolver **lista vazia sem erro nenhum**, e o histórico mostrava
    "0 ações" numa partida com eventos. Ao mexer em chave, derrube e recrie a
    loja, e suba `VERSAO` em `db.js`.
 2. **Cronômetro é timestamp, não contagem de tiques.** `base` guarda o acumulado
    até a pausa, `desde` o instante em que voltou a correr. Contar tiques
    quebrava quando a tela do celular apagava, e ao reabrir o app o tempo em
-   quadra ficava negativo — corrompendo justamente o dado da comparação por
+   quadra ficava negativo, corrompendo justamente o dado da comparação por
    minuto.
 3. **Não reconstruir os cards a cada segundo.** `renderTempos()` mexe só no
    texto. Trocar o DOM inteiro cancelaria o toque em curso.
@@ -258,7 +258,7 @@ a padrão privilegiada, e a troca fica à vista.
    aquele código existia para detectar.
 5. **Canvas falha calado.** Erro de coordenada não levanta exceção: desenha fora
    da área e o console fica limpo. Para conferir gráfico, varra os pixels
-   (contar tinta por faixa de linha) em vez de confiar no "sem erro" — foi assim
+   (contar tinta por faixa de linha) em vez de confiar no "sem erro". Foi assim
    que apareceu a legenda por cima da linha de números no relatório.
 6. **Canvas não redimensiona sozinho.** Trocar a largura do elemento não
    redesenha nada, e mudar `width`/`height` apaga o conteúdo. As telas
@@ -294,7 +294,7 @@ MySQL e chamadas diretas à API.
   `config.php` (copiando o `config.exemplo.php`), emitir o SSL no painel e subir
   para `htdocs/smoke/`. Ele agora trava três coisas: **PWA offline** (precisa de
   HTTPS), o **`'https' => true`** no `api/config.php` e a **IA da fase 5 rodando
-  no servidor** (precisa de conexão de saída — se não houver, a chamada tem que
+  no servidor** (precisa de conexão de saída; se não houver, a chamada tem que
   sair do navegador).
 - **Hospedagem definitiva.** InfinityFree é só para teste e apresentação. O Raul
   ainda vai decidir se banca um host pago. Por isso: credenciais e URL base num
@@ -330,7 +330,7 @@ o agregado que a IA precisa ler.
 - Aproveitamento de finalização inclui o gol:
   `(gol + certa) / (gol + certa + errada)`. Drible e passe seguem
   `certo / (certo + errado)`, como na planilha original.
-- Tudo é comparado **por minuto jogado** — decisão do Raul. Vem de `passagem`,
+- Tudo é comparado **por minuto jogado**, decisão do Raul. Vem de `passagem`,
   somando `saiu - entrou`.
 - "Regularidade" para ele são **as duas coisas**: constância entre jogos e
   constância do 1º para o 2º tempo. A primeira virou a variação típica (desvio

@@ -2,7 +2,7 @@
 //
 // Sem biblioteca: o app é offline-first e roda em hospedagem grátis, então
 // depender de um arquivo de 200 KB para desenhar três formas geométricas sairia
-// caro nos dois lados. O ganho real é outro — a mesma função que desenha na
+// caro nos dois lados. O ganho real é outro: a mesma função que desenha na
 // tela desenha o relatório em imagem, que é canvas de qualquer jeito. Basta
 // trocar o contexto e a escala.
 
@@ -96,7 +96,7 @@ var Grafico = (function () {
   }
 
   function fmt(v, formato) {
-    if (v === null || v === undefined) { return '—'; }
+    if (v === null || v === undefined) { return '-'; }
     if (formato === 'pct') { return Math.round(v) + '%'; }
     if (formato === 'taxa') { return v.toFixed(1); }
     if (formato === 'tempo') {
@@ -143,7 +143,7 @@ var Grafico = (function () {
         var v = g.valores[k];
         var x = inicio + k * (larguraBarra + vao);
         if (v === null || v === undefined) {
-          texto(ctx, '—', x + larguraBarra / 2, base - 4 * e, c.fraco, 11 * e, 'center');
+          texto(ctx, '-', x + larguraBarra / 2, base - 4 * e, c.fraco, 11 * e, 'center');
           return;
         }
         var altura = Math.max(2 * e, (Math.min(v, max) / max) * alturaPlot);

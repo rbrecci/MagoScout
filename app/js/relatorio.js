@@ -1,4 +1,4 @@
-// Relatório do jogo em imagem — o formato que o Raul pediu para mandar no
+// Relatório do jogo em imagem, o formato que o Raul pediu para mandar no
 // grupo. Não é PDF e não é Excel: é um PNG que se vê na conversa sem baixar
 // nada.
 //
@@ -57,7 +57,7 @@ var Relatorio = (function () {
 
     Grafico.legenda(ctx, MARGEM, 736, series, E);
 
-    // Os números que a barra não conta: gols e volume. Em linha própria — ao
+    // Os números que a barra não conta: gols e volume. Em linha própria, porque ao
     // lado da legenda eles se atropelavam assim que o placar passava de um
     // dígito.
     var linha = per.map(function (n) {

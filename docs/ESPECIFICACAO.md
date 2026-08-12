@@ -1,4 +1,4 @@
-# MagoScout — Especificação funcional
+# MagoScout: especificação funcional
 
 Fechada com as respostas do Raul em 11/08/2026 (entrevista de 33 perguntas,
 `Entrevista-Raul.html`). Este documento manda no que o app faz; o
@@ -8,7 +8,7 @@ Fechada com as respostas do Raul em 11/08/2026 (entrevista de 33 perguntas,
 
 ## Identidade
 
-- Time: **União Mauá Futsal**, mas o nome tem que ser **editável** — ele cogita
+- Time: **União Mauá Futsal**, mas o nome tem que ser **editável**, porque ele cogita
   usar em outro time.
 - Escudo: ele tem e vai mandar.
 - Azul vivo, mais claro (a família do `#2E9BE0`).
@@ -21,11 +21,11 @@ Fechada com as respostas do Raul em 11/08/2026 (entrevista de 33 perguntas,
 
 | Evento | Par | Observação |
 |--------|-----|------------|
-| Gol | — | botão próprio, separado do chute |
+| Gol | (sem par) | botão próprio, separado do chute |
 | Finalização certa | Finalização errada | "certa" = no alvo sem gol |
 | Drible certo | Drible errado | |
 | Passe certo | Passe errado | |
-| Bola roubada | — | sem contrário, decidido |
+| Bola roubada | (sem par) | sem contrário, decidido |
 | Falta cometida | Falta sofrida | botões separados |
 | Cartão amarelo | Cartão vermelho | |
 
@@ -42,7 +42,7 @@ Sem jogador associado.
 
 **Fora de escopo, decidido:** assistência, contador coletivo de faltas (regra das
 5), posse de bola, ritmo de jogo, qualquer ação do adversário. Ações novas não
-são criáveis pelo Raul — ele pede e nós implementamos.
+são criáveis pelo Raul: ele pede e nós implementamos.
 
 ### Aproveitamento
 
@@ -54,7 +54,7 @@ Drible e passe seguem a fórmula da planilha original: `certo × 100 / (certo + 
 ## Partida
 
 Guarda: **placar, data, campeonato e tipo** (oficial, amistoso ou treino).
-Nome do adversário não foi marcado — entra como campo opcional.
+Nome do adversário não foi marcado, então entra como campo opcional.
 
 O placar sai dos eventos (gol nosso, gol sofrido do goleiro) e pode ser corrigido
 na mão.
@@ -62,7 +62,7 @@ na mão.
 ### Cronômetro
 
 - Cronômetro do jogo dentro do app, com **play e pause**.
-- Padrão 2×20, mas a **duração do tempo é configurável** (2×18, 2×16) — pedido
+- Padrão 2×20, mas a **duração do tempo é configurável** (2×18, 2×16), pedido
   explícito dele.
 - Estatísticas **separadas por 1º e 2º tempo**. Não é opcional: é a primeira
   coisa que ele quer ver depois do jogo.
@@ -99,11 +99,11 @@ Um scout por vez (uma pessoa registrando).
 
 Ordem de importância declarada:
 
-1. **1º tempo contra 2º tempo** — a primeira coisa que ele abre.
+1. **1º tempo contra 2º tempo:** a primeira coisa que ele abre.
 2. Jogador contra a **média do time**.
 3. Jogador contra **ele mesmo, jogo a jogo**.
 
-- **Normalizado por minuto jogado** — decisão dele, e é o que torna a
+- **Normalizado por minuto jogado**, decisão dele, e é o que torna a
   substituição caminho crítico.
 - **Regularidade = as duas coisas**: constância entre jogos e constância do 1º
   para o 2º tempo.
@@ -128,11 +128,11 @@ O Raul também quer **acessar de mais de um celular**. Isso tira o login de
 **Jogador não tem conta.** O acesso é por **link público**, somente leitura.
 Sem senha, sem cadastro de atleta, sem suporte técnico para o Raul.
 A URL carrega um token longo e aleatório, e a página vai com `noindex` para não
-cair em buscador — são nomes de menores com dados de desempenho.
+cair em buscador, porque são nomes de menores com dados de desempenho.
 
 **Ranking com critério trocável.** Um botão no canto muda a métrica ordenada.
 A intenção é deliberada: o painel não responde "quem é o melhor", responde
-"quem mais faz isso". Nenhuma métrica é o padrão privilegiado — a primeira da
+"quem mais faz isso". Nenhuma métrica é o padrão privilegiado: a primeira da
 lista é só a primeira, e a troca é visível.
 
 ---

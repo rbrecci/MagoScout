@@ -84,7 +84,7 @@ var Sync = (function () {
   }
 
   // Chamada pelas telas que têm o que subir. Não faz nada se não houver sessão
-  // — o app inteiro funciona sem servidor, essa é a premissa desde a fase 1.
+  // o app inteiro funciona sem servidor, essa é a premissa desde a fase 1.
   function seDerCerto() {
     return Api.sessao().then(function (s) {
       if (!s.logado) { return avisar({ estado: 'sem-sessao' }); }

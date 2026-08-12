@@ -4,7 +4,7 @@
 //
 // Existe porque a hospedagem é provisória e o Raul vai precisar subir isto
 // sozinho mais de uma vez. Depois que houver um usuário, este endpoint recusa
-// tudo — é a única proteção dele, e é suficiente porque a janela dura o tempo
+// tudo. É a única proteção dele, e é suficiente porque a janela dura o tempo
 // entre subir os arquivos e criar a conta.
 
 declare(strict_types=1);
@@ -47,7 +47,7 @@ function estado(array $b): array
 
 // Divide o schema em comandos. O arquivo é nosso e não tem procedure nem
 // delimitador customizado, então quebrar no ponto-e-vírgula de fim de linha dá
-// conta — e evita depender de multi-statement, que nem todo host habilita.
+// conta, e evita depender de multi-statement, que nem todo host habilita.
 function comandos(string $sql): array
 {
     $linhas = preg_split('/\r?\n/', $sql);
@@ -124,7 +124,7 @@ try {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    error_log('MagoScout: falha instalando — ' . $e->getMessage());
+    error_log('MagoScout: falha instalando: ' . $e->getMessage());
     erro('falha instalando: ' . $e->getCode(), 500);
 }
 

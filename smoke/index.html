@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>MagoScout — diagnóstico do host</title>
+<title>MagoScout: diagnóstico do host</title>
 <style>
   :root {
     --bg: #EEF4FA;
@@ -153,7 +153,7 @@
   var https = location.protocol === "https:";
   conta(https ? "ok" : "falha");
   linha(elCliente, "Página servida por HTTPS", https ? "ok" : "falha",
-        https ? location.origin : "está em " + location.protocol + " — o service worker não registra assim");
+        https ? location.origin : "está em " + location.protocol + ", e o service worker não registra assim");
 
   var temSW = "serviceWorker" in navigator;
   conta(temSW ? "ok" : "falha");

@@ -14,12 +14,12 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: same-origin');
 
 // `config.php` não é versionado (carrega a senha do banco). Em instalação nova,
-// o arquivo simplesmente não existe — e isso precisa dizer o que fazer, não
+// o arquivo simplesmente não existe, e isso precisa dizer o que fazer, não
 // morrer com erro de include.
 if (!file_exists(__DIR__ . '/config.php')) {
     http_response_code(503);
     echo json_encode([
-        'erro' => 'falta o api/config.php — copie o api/config.exemplo.php e preencha as credenciais do banco',
+        'erro' => 'falta o api/config.php: copie o api/config.exemplo.php e preencha as credenciais do banco',
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -72,7 +72,7 @@ function banco(): PDO
         ]);
     } catch (PDOException $e) {
         // A mensagem do PDO carrega usuário e host: fica no log, não na tela.
-        error_log('MagoScout: falha conectando ao banco — ' . $e->getMessage());
+        error_log('MagoScout: falha conectando ao banco: ' . $e->getMessage());
         erro('banco indisponível', 503);
     }
     return $pdo;

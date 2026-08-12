@@ -29,7 +29,7 @@ return [
     'time_padrao' => 'União Mauá Futsal',
 
     // Em produção o cookie de sessão só deve viajar em HTTPS. Local não tem
-    // certificado, então fica desligado — e é por isso que o smoke test do
+    // certificado, então fica desligado, e é por isso que o smoke test do
     // host importa: sem HTTPS confirmado, isto aqui nunca pode virar true.
     'https' => false,
 ];

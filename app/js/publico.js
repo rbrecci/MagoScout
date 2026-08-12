@@ -1,7 +1,7 @@
 // A página que os jogadores abrem. Somente leitura, sem conta e sem senha.
 //
 // Não usa IndexedDB: lê direto do servidor pelo token da URL. Quem abre isto é
-// o atleta no celular dele, não o Raul — nada aqui grava nada.
+// o atleta no celular dele, não o Raul. Nada aqui grava nada.
 //
 // O ranking tem botão de trocar o critério de propósito. A tela não responde
 // "quem é o melhor", responde "quem mais faz isso": nenhuma métrica é a
@@ -30,7 +30,7 @@
 
   // A página pública não carrega o módulo de gráfico: formata sozinha.
   function texto(v, formato) {
-    if (v === null || v === undefined) { return '—'; }
+    if (v === null || v === undefined) { return '-'; }
     if (formato === 'pct') { return Math.round(v) + '%'; }
     if (formato === 'taxa') { return v.toFixed(1); }
     if (formato === 'tempo') { return Estatisticas.mmss(v); }

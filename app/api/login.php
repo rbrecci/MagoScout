@@ -1,5 +1,5 @@
 <?php
-// Entrada da comissão técnica. Só a comissão tem conta — o jogador entra por
+// Entrada da comissão técnica. Só a comissão tem conta; o jogador entra por
 // link público, sem senha.
 
 declare(strict_types=1);

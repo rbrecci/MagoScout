@@ -53,7 +53,7 @@ var Dados = (function () {
 
   // Sair do elenco é virar inativo, não sumir. Dois motivos: os eventos das
   // partidas antigas continuam apontando para ele, e apagar de um celular não
-  // teria como apagar do outro — o registro precisa existir para poder viajar
+  // teria como apagar do outro, porque o registro precisa existir para poder viajar
   // dizendo "este aqui saiu".
   function removerJogador(uuid) {
     return DB.obter('jogador', uuid).then(function (j) {

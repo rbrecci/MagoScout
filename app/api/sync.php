@@ -5,7 +5,7 @@
 // Duas garantias sustentam isso:
 //
 // 1. Tudo tem UUID gerado no cliente, então subir a mesma fila duas vezes não
-//    duplica nada — o INSERT vira UPDATE do mesmo registro.
+//    duplica nada, porque o INSERT vira UPDATE do mesmo registro.
 // 2. O relógio que manda é o do servidor (`recebido_em`). O celular nunca
 //    compara datas próprias com as de outro aparelho: ele guarda o carimbo que
 //    o servidor devolveu e usa esse na próxima pergunta.
@@ -196,7 +196,7 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    error_log('MagoScout: falha sincronizando — ' . $e->getMessage());
+    error_log('MagoScout: falha sincronizando: ' . $e->getMessage());
     // Nada foi gravado: o cliente mantém a fila e tenta de novo.
     erro('falha gravando o lote', 500);
 }

@@ -53,7 +53,7 @@ var Estatisticas = (function () {
     };
   }
 
-  // Tudo que o Raul compara é por minuto jogado — foi a decisão dele.
+  // Tudo que o Raul compara é por minuto jogado, decisão dele.
   function porMinuto(quantidade, segundos) {
     if (!segundos) { return null; }
     return (quantidade * 60) / segundos;
@@ -66,7 +66,7 @@ var Estatisticas = (function () {
     return partida.desde ? base + Math.floor((Date.now() - partida.desde) / 1000) : base;
   }
 
-  // Passagem sem `saiu` é passagem que ficou aberta — o app foi fechado no meio
+  // Passagem sem `saiu` é passagem que ficou aberta: o app foi fechado no meio
   // do período, ou o período virou sem substituição. O fim é o relógio que se
   // conhece: o cronômetro da partida, se for o período corrente; senão a
   // duração cheia do período.
@@ -171,7 +171,7 @@ var Estatisticas = (function () {
   // ------------------------------------------------ métricas
 
   // Catálogo do que dá para comparar. Ficha de jogador e resumo do time têm o
-  // mesmo formato de propósito, então a mesma métrica lê os dois — é o que
+  // mesmo formato de propósito, então a mesma métrica lê os dois. É o que
   // permite pôr jogador e média do time no mesmo gráfico.
   var METRICAS = [
     { chave: 'acoes_min', rotulo: 'Ações por minuto', formato: 'taxa',
@@ -209,7 +209,7 @@ var Estatisticas = (function () {
   // O número do time só é comparável com o de um jogador quando é taxa: 74% de
   // passe do time se põe ao lado dos 68% dele. Em métrica de soma (gols,
   // faltas, minutos) o time é o total do elenco, e comparar um jogador com o
-  // total dos seis é comparar coisa nenhuma — a referência justa é o total
+  // total dos seis é comparar coisa nenhuma. A referência justa é o total
   // dividido por quem esteve em quadra.
   function referenciaDoTime(jogo, metrica, periodo) {
     var v = metrica.valor(jogo.time, periodo || 'total');
@@ -222,7 +222,7 @@ var Estatisticas = (function () {
   // ------------------------------------------------ vários jogos
 
   // Um ponto por jogo, na ordem em que a lista chegar. Jogo em que o sujeito
-  // não entrou vale null: buraco na linha, não zero — zero seria dizer que ele
+  // não entrou vale null: buraco na linha, não zero, porque zero seria dizer que ele
   // jogou mal.
   function serie(jogos, jogadorUuid, metrica, periodo) {
     var p = periodo || 'total';
@@ -310,7 +310,7 @@ var Estatisticas = (function () {
   }
 
   // Regularidade, para o Raul, são duas coisas: constância entre jogos e do 1º
-  // para o 2º tempo. Isto resolve a primeira — quanto o número costuma variar
+  // para o 2º tempo. Isto resolve a primeira: quanto o número costuma variar
   // em torno da própria média. Menor é mais constante.
   function desvio(valores) {
     var v = valores.filter(function (x) { return x !== null && x !== undefined; });
