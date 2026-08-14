@@ -53,6 +53,9 @@ var Api = (function () {
     instalar: function (dados) { return chamar('instalar.php', { corpo: dados }); },
     publico: function (token) {
       return chamar('publico.php?t=' + encodeURIComponent(token), { method: 'GET' });
+    },
+    analiseIa: function (tipo, resumo) {
+      return chamar('ia.php', { corpo: { tipo: tipo, resumo: resumo } });
     }
   };
 })();

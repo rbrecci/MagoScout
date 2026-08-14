@@ -55,6 +55,8 @@
         caixaAtiva.appendChild(a);
       }
 
+      iniciarIa(partidas);
+
       historico.innerHTML = '';
       if (!partidas.length) {
         var vazio = document.createElement('p');
@@ -98,6 +100,161 @@
         });
       });
     });
+  }
+
+  // ------------------------------------------------ quem está caindo
+
+  var ia = {
+    secao: document.getElementById('secao-ia'),
+    modos: document.getElementById('ia-modos'),
+    texto: document.getElementById('ia-texto'),
+    estado: document.getElementById('ia-estado'),
+    botao: document.getElementById('bt-ia')
+  };
+
+  // Os dois modos leem a mesma temporada e custam uma chamada cada, então cada
+  // um guarda o seu texto e trocar de aba nunca dispara geração sozinha.
+  var MODOS = [
+    {
+      chave: 'rendimento',
+      rotulo: 'Quem está caindo',
+      acao: 'Ler quem está caindo',
+      nota: 'Queda menor que a variação típica do jogador é oscilação, não queda.'
+    },
+    {
+      chave: 'treino',
+      rotulo: 'O que treinar',
+      acao: 'Sugerir o treino da semana',
+      nota: 'A IA não sabe quantos treinos você tem na semana nem que material existe: ela aponta o que os números pedem, a agenda é sua.'
+    }
+  ];
+
+  var modo = MODOS[0];
+  var jogosEmCache = null;
+
+  function modoPor(chave) {
+    return MODOS.filter(function (m) { return m.chave === chave; })[0] || MODOS[0];
+  }
+
+  function estadoIa(mensagem, falhou) {
+    ia.estado.textContent = mensagem || '';
+    ia.estado.className = 'ia-estado' + (falhou ? ' falhou' : '');
+  }
+
+  function vazio() {
+    ia.texto.innerHTML = '';
+    ia.botao.textContent = modo.acao;
+    estadoIa('');
+  }
+
+  function mostrarIa(r) {
+    IA.render(ia.texto, r.texto);
+    ia.botao.textContent = 'Ler de novo';
+
+    if (r.truncado) {
+      estadoIa('O texto acima ficou pela metade: a IA atingiu o limite de tamanho. Toque em ler de novo.', true);
+      return;
+    }
+
+    estadoIa(r.doCache
+      ? 'Gerada em ' + Dados.dataCurta(String(r.quando).slice(0, 10)) + ' e guardada no aparelho.'
+      : 'Escrita agora por ' + r.modelo + '. ' + modo.nota);
+  }
+
+  function pedirIa(forcar) {
+    var pedido = modo.chave;
+    ia.botao.disabled = true;
+    estadoIa('Lendo a temporada inteira…');
+
+    // Só aqui o histórico completo é carregado. Na abertura da tela ele custaria
+    // todos os eventos de todos os jogos para, quase sempre, nada. Uma vez lido,
+    // fica: o segundo modo não paga o carregamento de novo.
+    var carregou = jogosEmCache
+      ? Promise.resolve(jogosEmCache)
+      : Dados.carregarHistorico().then(function (pacotes) {
+          jogosEmCache = pacotes.map(function (p) {
+            return Estatisticas.calcular(p.partida, p.eventos, p.passagens, p.jogadores);
+          });
+          return jogosEmCache;
+        });
+
+    carregou.then(function (jogos) {
+      return IA.analiseDaTemporada(pedido, jogos, forcar);
+    }).then(function (r) {
+      // Trocar de aba enquanto a IA escrevia não pode fazer o texto de um modo
+      // cair na tela do outro.
+      if (pedido !== modo.chave) { return; }
+      mostrarIa(r);
+    }).catch(function (err) {
+      console.error('falha na leitura da temporada', err);
+      if (err.codigo === 501) {
+        ia.secao.hidden = true;
+        return;
+      }
+      estadoIa(err.codigo === 401
+        ? 'Precisa entrar na conta da comissão para usar a IA.'
+        : (err.message || 'Não deu para ler a temporada agora.'), true);
+    }).then(function () {
+      ia.botao.disabled = false;
+    });
+  }
+
+  // `render()` roda de novo a cada sincronização. Sem esta trava, o listener
+  // entraria mais de uma vez no mesmo botão e um toque viraria duas chamadas
+  // pagas à IA.
+  var iaLigada = false;
+
+  function iniciarIa(partidas) {
+    if (!partidas.length || iaLigada) { return; }
+    iaLigada = true;
+    ia.secao.hidden = false;
+
+    if (partidas.length < IA.MINIMO_JOGOS) {
+      ia.botao.hidden = true;
+      estadoIa('Com ' + partidas.length + (partidas.length === 1 ? ' jogo' : ' jogos') +
+        ' ainda não dá para falar em tendência: falta com o que comparar. ' +
+        'A partir de ' + IA.MINIMO_JOGOS + ' jogos esta seção liga sozinha.');
+      return;
+    }
+
+    ia.botao.hidden = false;
+    ia.botao.addEventListener('click', function () {
+      pedirIa(ia.texto.childNodes.length > 0);
+    });
+
+    // A lista leve basta para achar o texto guardado: a chave é o jogo mais
+    // recente mais a contagem, e nenhum evento precisa sair do banco para isso.
+    var referencia = IA.referenciaRendimento(partidas[0].uuid, partidas.length);
+
+    function abrir(escolhido) {
+      modo = escolhido;
+      renderModos();
+      vazio();
+      IA.guardada(modo.chave, referencia).then(function (cache) {
+        // De volta do banco tarde demais: o dedo já trocou de aba.
+        if (!cache || modo !== escolhido) { return; }
+        cache.doCache = true;
+        mostrarIa(cache);
+      });
+    }
+
+    function renderModos() {
+      ia.modos.innerHTML = '';
+      MODOS.forEach(function (m) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'segmento' + (m === modo ? ' ativo' : '');
+        b.textContent = m.rotulo;
+        b.setAttribute('aria-pressed', m === modo ? 'true' : 'false');
+        b.addEventListener('click', function () {
+          if (m === modo) { return; }
+          abrir(m);
+        });
+        ia.modos.appendChild(b);
+      });
+    }
+
+    abrir(modoPor('rendimento'));
   }
 
   // ------------------------------------------------ sincronização

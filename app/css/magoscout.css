@@ -480,6 +480,38 @@ button:focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
 }
 .bt-perigo { color: var(--errado); }
 
+/* Leitura do jogo escrita pela IA. Texto corrido no meio de uma tela que é
+   toda número, então respira mais que o resto: entrelinha alta e largura de
+   leitura, senão vira parede. */
+.ia-texto:empty { display: none; }
+.ia-texto {
+  background: var(--card);
+  border: 1px solid var(--linha);
+  border-left: 3px solid var(--azul);
+  border-radius: 10px;
+  padding: 14px 16px;
+  line-height: 1.6;
+}
+.ia-texto h3 {
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-fraco);
+  font-weight: 700;
+  margin: 16px 0 6px;
+}
+.ia-texto h3:first-child { margin-top: 0; }
+.ia-texto p { margin: 0 0 10px; }
+.ia-texto ul { margin: 0 0 10px; padding-left: 18px; }
+.ia-texto li { margin-bottom: 5px; }
+.ia-texto > :last-child { margin-bottom: 0; }
+.ia-estado {
+  font-size: 12.5px;
+  color: var(--ink-fraco);
+  margin: 8px 0 0;
+}
+.ia-estado.falhou { color: var(--errado); }
+
 .lista { display: flex; flex-direction: column; gap: 8px; }
 
 .item-lista {

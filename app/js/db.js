@@ -10,7 +10,7 @@ var DB = (function () {
   'use strict';
 
   var NOME = 'magoscout';
-  var VERSAO = 3;
+  var VERSAO = 4;
   var conexao = null;
 
   function abrir() {
@@ -21,23 +21,38 @@ var DB = (function () {
       req.onupgradeneeded = function (e) {
         var db = e.target.result;
 
-        // A versão 1 usava id numérico do servidor e índice em `partida_id`.
-        // Nem keyPath de loja nem keyPath de índice mudam no lugar, e um
-        // índice velho apontando para campo que não existe mais devolve lista
-        // vazia sem erro nenhum. Por isso as lojas são derrubadas e refeitas:
-        // os registros da v1 referenciam ids que não existem mais de qualquer
-        // forma.
-        ['jogador', 'partida', 'evento', 'passagem', 'convocacao'].forEach(function (loja) {
-          if (db.objectStoreNames.contains(loja)) { db.deleteObjectStore(loja); }
-        });
+        // Cada degrau roda só para quem está abaixo dele. Sem o `oldVersion`,
+        // qualquer subida de versão futura derrubaria as lojas de novo e
+        // levaria junto o histórico de quem já usa o app: aqui dentro, apagar
+        // é irreversível e silencioso.
+        if (e.oldVersion < 3) {
+          // A versão 1 usava id numérico do servidor e índice em `partida_id`.
+          // Nem keyPath de loja nem keyPath de índice mudam no lugar, e um
+          // índice velho apontando para campo que não existe mais devolve lista
+          // vazia sem erro nenhum. Por isso as lojas são derrubadas e refeitas:
+          // os registros da v1 referenciam ids que não existem mais de qualquer
+          // forma.
+          ['jogador', 'partida', 'evento', 'passagem', 'convocacao'].forEach(function (loja) {
+            if (db.objectStoreNames.contains(loja)) { db.deleteObjectStore(loja); }
+          });
 
-        db.createObjectStore('jogador', { keyPath: 'uuid' });
-        db.createObjectStore('partida', { keyPath: 'uuid' });
-        db.createObjectStore('convocacao', { keyPath: 'partida_uuid' });
-        db.createObjectStore('evento', { keyPath: 'uuid' })
-          .createIndex('partida', 'partida_uuid');
-        db.createObjectStore('passagem', { keyPath: 'uuid' })
-          .createIndex('partida', 'partida_uuid');
+          db.createObjectStore('jogador', { keyPath: 'uuid' });
+          db.createObjectStore('partida', { keyPath: 'uuid' });
+          db.createObjectStore('convocacao', { keyPath: 'partida_uuid' });
+          db.createObjectStore('evento', { keyPath: 'uuid' })
+            .createIndex('partida', 'partida_uuid');
+          db.createObjectStore('passagem', { keyPath: 'uuid' })
+            .createIndex('partida', 'partida_uuid');
+        }
+
+        // v4: o texto que a IA escreveu. Guardado porque custa uma chamada de
+        // rede paga para nascer e porque o Raul precisa reler no vestiário, que
+        // é justamente onde o sinal do ginásio não ajuda.
+        if (e.oldVersion < 4) {
+          if (!db.objectStoreNames.contains('analise_ia')) {
+            db.createObjectStore('analise_ia', { keyPath: 'chave' });
+          }
+        }
       };
 
       req.onsuccess = function (e) { conexao = e.target.result; ok(conexao); };

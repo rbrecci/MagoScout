@@ -446,6 +446,67 @@
 
   function fecharPainel() { el.painel.hidden = true; }
 
+  // ------------------------------------------------ leitura da IA
+
+  function estadoIa(mensagem, falhou) {
+    el.iaEstado.textContent = mensagem || '';
+    el.iaEstado.className = 'ia-estado' + (falhou ? ' falhou' : '');
+  }
+
+  function mostrarAnalise(r) {
+    IA.render(el.iaTexto, r.texto);
+    el.btIa.textContent = 'Analisar de novo';
+
+    if (r.truncado) {
+      estadoIa('O texto acima ficou pela metade: a IA atingiu o limite de tamanho. Toque em analisar de novo.', true);
+      return;
+    }
+
+    estadoIa(r.doCache
+      // `quando` vem do banco com hora junto, e o dataCurta só entende a data.
+      ? 'Gerada em ' + Dados.dataCurta(String(r.quando).slice(0, 10)) + ' e guardada no aparelho.'
+      : 'Escrita agora por ' + r.modelo + '. Confira antes de repassar: a IA lê os números, não o jogo.');
+  }
+
+  function pedirAnalise(forcar) {
+    el.btIa.disabled = true;
+    estadoIa('Lendo os números do jogo…');
+
+    IA.analiseDoJogo(res, forcar).then(function (r) {
+      mostrarAnalise(r);
+    }).catch(function (err) {
+      console.error('falha na análise da IA', err);
+      if (err.codigo === 501) {
+        // Servidor sem chave: não adianta oferecer de novo.
+        el.secaoIa.hidden = true;
+        return;
+      }
+      estadoIa(err.codigo === 401
+        ? 'Precisa entrar na conta da comissão para usar a IA.'
+        : (err.message || 'Não deu para gerar a análise agora.'), true);
+    }).then(function () {
+      el.btIa.disabled = false;
+    });
+  }
+
+  function iniciarIa() {
+    // Jogo sem nada registrado não tem o que ler.
+    if (res.time.acoes.total === 0) { return; }
+    el.secaoIa.hidden = false;
+
+    el.btIa.addEventListener('click', function () {
+      pedirAnalise(el.iaTexto.childNodes.length > 0);
+    });
+
+    // O texto já guardado aparece sozinho; gerar de novo é escolha, porque
+    // cada geração é uma chamada de rede.
+    IA.guardada('jogo', res.partida.uuid).then(function (cache) {
+      if (!cache) { return; }
+      cache.doCache = true;
+      mostrarAnalise(cache);
+    });
+  }
+
   // ------------------------------------------------ cabeçalho
 
   function renderCabecalho() {
@@ -488,6 +549,10 @@
       gPeriodos: document.getElementById('g-periodos'),
       gJogadores: document.getElementById('g-jogadores'),
       relatorio: document.getElementById('bt-relatorio'),
+      secaoIa: document.getElementById('secao-ia'),
+      iaTexto: document.getElementById('ia-texto'),
+      iaEstado: document.getElementById('ia-estado'),
+      btIa: document.getElementById('bt-ia'),
       nota: document.getElementById('rodape-nota'),
       painel: document.getElementById('painel'),
       painelTitulo: document.getElementById('painel-titulo'),
@@ -537,6 +602,7 @@
       renderMetricas();
       renderJogadores();
       desenharGraficos();
+      iniciarIa();
     }).catch(function (err) {
       console.error('falha abrindo a análise', err);
     });
