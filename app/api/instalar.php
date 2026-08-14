@@ -95,9 +95,26 @@ if ($nome === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($senha)
 
 try {
     $pdo = conexaoServidor($b);
-    $pdo->exec('CREATE DATABASE IF NOT EXISTS `' . str_replace('`', '', $b['nome']) .
-        '` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
-    $pdo->exec('USE `' . str_replace('`', '', $b['nome']) . '`');
+
+    // Criar o banco só funciona onde o usuário do MySQL tem essa permissão, que
+    // é o caso do XAMPP local e não é o da hospedagem compartilhada: lá o banco
+    // nasce no painel e o usuário recebe permissão só dentro dele. E o
+    // `IF NOT EXISTS` não salva, porque o MySQL checa privilégio antes de olhar
+    // se o banco já existe. Então aqui a falha é engolida de propósito: quem
+    // decide se deu certo é o `USE` logo abaixo, que é o que realmente importa.
+    try {
+        $pdo->exec('CREATE DATABASE IF NOT EXISTS `' . str_replace('`', '', $b['nome']) .
+            '` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    } catch (PDOException $e) {
+        error_log('MagoScout instalar: sem permissão para criar banco, seguindo com o existente: ' . $e->getMessage());
+    }
+
+    try {
+        $pdo->exec('USE `' . str_replace('`', '', $b['nome']) . '`');
+    } catch (PDOException $e) {
+        erro('o banco "' . $b['nome'] . '" não existe ou o usuário não tem acesso a ele. ' .
+            'Em hospedagem compartilhada, crie o banco no painel antes de instalar.', 503);
+    }
 
     if (empty($situacao['schema'])) {
         $sql = file_get_contents(__DIR__ . '/../banco/schema.sql');
