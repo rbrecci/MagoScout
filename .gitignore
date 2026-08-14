@@ -1,7 +1,6 @@
 # Credenciais do banco. Cada instalação preenche as suas a partir dos
 # arquivos `config.exemplo.php` versionados ao lado.
 app/api/config.php
-smoke/config.php
 
 # Sistema e editor
 Thumbs.db

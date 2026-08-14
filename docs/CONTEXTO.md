@@ -14,8 +14,12 @@ gráficos de desempenho e acesso pelos jogadores.
 MagoScout/
 ├── app/      o aplicativo (é isto que vai para o servidor)
 ├── docs/     esta pasta: o que o app faz, como e por quê
-└── smoke/    diagnóstico do host. Descartável depois de rodado.
+└── README.md
 ```
+
+A pasta `smoke/` existia para diagnosticar o host. Rodou, aprovou e foi apagada
+em 12/08. Se algum dia precisar dela de novo (host novo, por exemplo), está no
+histórico do Git.
 
 | Arquivo | Para quê |
 |---------|----------|
@@ -27,10 +31,13 @@ MagoScout/
 
 ---
 
-## Estado: fases 0 a 4 completas e testadas
+## Estado: fases 0 a 4 completas e testadas, host aprovado
 
 Falta só a fase 5 (IA). O app funciona **inteiro offline, sem servidor** e,
-quando há rede e login, sincroniza entre aparelhos.
+quando há rede e login, sincroniza entre aparelhos. O smoke test do host rodou
+em 12/08 e passou em tudo, sem uma ressalva sequer (ver "Verificações já
+feitas"), o que liberou de uma vez o PWA offline, o `'https' => true` e a IA da
+fase 5 rodando no próprio servidor.
 
 ```
 index.html    retomar jogo aberto + histórico + estado da sincronização
@@ -101,7 +108,8 @@ app/api/
 ├── instalar.php        cria banco + schema + a primeira conta; se recusa depois disso
 ├── login.php · sessao.php   entrar, quem sou eu, sair
 ├── sync.php            sobe a fila e baixa o que mudou, numa chamada só
-└── publico.php         dados do link dos jogadores (somente leitura, por token)
+├── publico.php         dados do link dos jogadores (somente leitura, por token)
+└── ia.php              recebe números prontos, escreve o prompt, chama o Gemini
 ```
 
 **Como a sincronização funciona.** O relógio que manda é o do servidor: cada
@@ -118,6 +126,63 @@ partida.
 **Jogador removido vira inativo, não some.** É a única forma de a remoção
 atravessar para o outro celular, e preserva o histórico das partidas antigas. A
 tela de elenco lista só os ativos; a análise continua achando os inativos.
+
+### Fase 5: a IA (em construção, três recursos entregues)
+
+Dos quatro recursos que o Raul pediu, **três estão prontos**. Falta só o ajuste
+tático para o intervalo.
+
+- **Leitura do jogo**, na análise da partida, embaixo da lista de jogadores.
+- **A temporada**, na tela inicial, abaixo do histórico, com duas abas:
+  **Quem está caindo** e **O que treinar**.
+
+Os três geram com um toque, guardam o texto no aparelho e reexibem sem gastar
+rede. As duas abas partem do mesmo `resumoDeRendimento()` e do mesmo cache; o
+que muda é o prompt, no servidor. Trocar de aba nunca dispara geração, porque
+cada uma custa uma chamada.
+
+A seção da temporada só aparece a partir de 4 jogos (`IA.MINIMO_JOGOS`): com
+três, os três recentes comem a temporada e não sobra com o que comparar, e o
+botão daria um palpite com cara de análise. Abaixo disso a seção explica a
+espera em vez de sumir calada.
+
+**Partida com menos de 30 ações fica de fora das tendências**
+(`MINIMO_ACOES_NO_JOGO`). Não é jogo ruim, é jogo não escoutado, e ele não entra
+como um ponto fraco qualquer: ele detona a série. Com poucos minutos rodados
+tudo que é "por minuto" estoura e todo percentual vira 100%, porque a única
+tentativa registrada deu certo. No histórico semeado, uma partida de 3 ações
+aparecia como 12 ações por minuto contra 1,5 das outras e levava a média dos
+recentes para o triplo da real.
+
+**O cache tem versão (`VERSAO_RESUMO` no `ia.js`), e ela tem que subir sempre
+que o resumo mudar de conteúdo ou de regra.** O texto guardado envelhece de dois
+jeitos: por jogo novo, que a contagem da chave pega, e por mudança na lógica,
+que ela não pega. Foi exatamente o que aconteceu quando o filtro acima entrou:
+mesma chave, dados diferentes, texto velho preso na tela para sempre.
+
+**A régua contra o falso alarme é a variação típica.** O resumo manda, por
+jogador e por métrica, a diferença entre os últimos jogos e os anteriores E o
+desvio padrão dele naquela métrica; o prompt manda comparar as duas. Queda menor
+que a oscilação normal do sujeito tem que ser chamada de oscilação, não de
+queda, senão o app faz o treinador cobrar atleta por ruído estatístico. No jogo
+semeado isso separou os dois casos do Carlos Daniel corretamente: drible caindo
+20,33 com variação típica de 10,89 (queda real) e finalização caindo 7,67 com
+variação típica de 8,26 (oscilação).
+
+**Os números não são recalculados no servidor.** O celular manda o resumo já
+somado por `estatisticas.js` e o `api/ia.php` só escreve o prompt. Refazer a
+agregação em PHP criaria uma segunda matemática para discordar da primeira, que
+é o que o projeto evita desde a fase 2.
+
+**A chave da IA nunca chega ao navegador.** É o motivo de existir endpoint em
+vez de o `ia.js` chamar o Gemini direto: chave em JavaScript é chave publicada.
+Isso só é possível porque o smoke test provou que o host alcança a internet de
+saída.
+
+**Modelo: `gemini-3.6-flash`**, configurável em `api/config.php`. Conferido em
+12/08: `gemini-2.5-flash` foi fechado para contas novas e responde erro. Sem
+chave preenchida, o endpoint devolve 501 e a tela esconde a seção; o app inteiro
+segue funcionando.
 
 ---
 
@@ -148,9 +213,22 @@ que volta a oferecer o primeiro acesso.
 
 ### Subir para um host
 
-1. Copiar a pasta `app/` inteira para o `htdocs` do host.
+**O host já foi testado e aprovado em 12/08** (`magoscout.infinityfreeapp.com`,
+InfinityFree). O que o smoke test resolveu, e que estava travado antes:
+
+- **HTTPS não precisa ser emitido** no subdomínio gratuito. O certificado é um
+  wildcard `*.infinityfreeapp.com` da ZeroSSL, já servido de fábrica. Emitir SSL
+  à mão só volta a ser assunto se entrar domínio próprio.
+- **Service worker registra**, então o PWA offline está destravado.
+- **O servidor alcança a internet de saída** (curl devolveu HTTP 200), então a
+  IA da fase 5 pode rodar no PHP. Não precisa sair do navegador, que era o plano
+  B e o que mais mudaria a arquitetura.
+
+1. Copiar a pasta `app/` inteira para o `htdocs` do host. **Vai na raiz do
+   `htdocs`, não numa subpasta**: o smoke test foi subido numa subpasta primeiro
+   e devolveu 404 até ser movido.
 2. Criar o banco no painel, copiar `api/config.exemplo.php` para
-   `api/config.php` e preencher. Com HTTPS emitido, virar `'https' => true`.
+   `api/config.php` e preencher. Pode já virar `'https' => true`.
 3. Abrir `login.html`: como não existe usuário, ela mostra o formulário de
    primeiro acesso. Criar a conta ali.
 4. Copiar o link dos jogadores na tela inicial e mandar no grupo.
@@ -175,6 +253,7 @@ app/
     ├── relatorio.js     o PNG 1080×1350 do jogo
     ├── api.js           o único arquivo que sabe que existe um servidor
     ├── sync.js          a fila: sobe o pendente, aplica o que veio
+    ├── ia.js            resumos para a IA, cache do texto e o render de Markdown
     ├── inicio.js · elenco.js · partida.js · scout.js
     ├── analise.js · jogador.js · login.js · publico.js
 ```
@@ -263,7 +342,31 @@ a padrão privilegiada, e a troca fica à vista.
 6. **Canvas não redimensiona sozinho.** Trocar a largura do elemento não
    redesenha nada, e mudar `width`/`height` apaga o conteúdo. As telas
    redesenham no `resize` com um respiro de 150 ms.
-7. **PHP não pode cuspir HTML no meio de um JSON.** `display_errors` fica
+7. **O relógio do MySQL do host não é o do PHP.** No InfinityFree o PHP está em
+   São Paulo e o MySQL está 4 horas atrás (`hora_servidor: 14:41:19` contra
+   `hora_gravada_no_banco: 10:41:20`, medidos no smoke test). A sincronização
+   passa ilesa porque os dois lados da comparação vêm do mesmo relógio: o
+   marcador é `SELECT NOW()` (`sync.php`) e o `recebido_em` é
+   `CURRENT_TIMESTAMP` no schema. O que **não** pode é comparar um com o outro.
+   Existe um ponto que mistura os dois, o fallback de `dataHora()` em
+   `sync.php`, que cai em `date()` do PHP quando o celular manda um `criado_em`
+   malformado; não é caminho normal e não toca no marcador. Nada disso aparece
+   testando no XAMPP2, onde PHP e MySQL dividem a mesma máquina.
+8. **Nos modelos que "pensam", o teto de tokens cobre o raciocínio também, e
+   ele come primeiro.** Medido em 12/08 no `gemini-3.6-flash`: um prompt de 54
+   tokens gastou 2353 pensando e 589 escrevendo. Com teto de 3000 e o JSON do
+   jogo junto, a análise vinha **cortada no meio de uma frase**, que é o pior
+   defeito possível, porque parece inteira: o treinador leria metade de uma
+   conclusão como se fosse a conclusão. Duas defesas, e são necessárias as
+   duas: `thinkingLevel: 'low'` (o `thinkingBudget: 0` é recusado por este
+   modelo) e teto folgado; mais o `finishReason` sendo checado, que faz
+   truncamento virar aviso na tela em vez de passar batido.
+9. **`onupgradeneeded` do IndexedDB roda para qualquer subida de versão.** O
+   bloco que derrubava as lojas na migração da v1 não checava de onde vinha,
+   então subir para a v4 teria apagado o histórico local de quem já usa o app.
+   Cada degrau agora está dentro de um `if (e.oldVersion < N)`. Apagar loja é
+   irreversível e não levanta erro nenhum.
+10. **PHP não pode cuspir HTML no meio de um JSON.** `display_errors` fica
    desligado na API e todo erro sai como JSON; do lado do cliente, `api.js`
    traduz "resposta que não é JSON" para uma mensagem legível, em vez de
    "token inesperado <".
@@ -281,6 +384,10 @@ MySQL e chamadas diretas à API.
 | 11/08 | Fase 1 inteira no navegador; console limpo. |
 | 11/08 | Fase 2 com uma partida semeada de 271 eventos e 12 passagens (uma anulada, duas substituições): totais, percentuais, tempo por período, filtro, ficha do goleiro e partida sem nenhum evento. |
 | 11/08 | Fase 3 com 5 partidas semeadas (1.741 eventos, elenco de 6, um jogador relacionado sem entrar em quadra): gráficos redesenhando ao trocar métrica, período e ao girar a tela; os 5 relatórios sem nada fora da margem e sem faixas sobrepostas. |
+| 12/08 | Fase 5, o treino da semana, sobre as mesmas partidas: as quatro seções saindo, o foco caindo na queda coletiva do 2º tempo (o achado mais acionável), "No coletivo" trazendo trabalho e não elogio, as duas abas guardando texto separado, troca de aba sem disparar geração, o versionamento do cache invalidando os textos velhos sem chamar a API e nada transbordando em 375px. **Números conferidos**: time com passe 8,17 acima da variação típica de 6,59, queda de 6,2 no passe e 0,11 nas ações do 1º para o 2º tempo, Felipe 44,33 contra 56,5 e Carlos 46,67 contra 67. |
+| 12/08 | Fase 5, quem está caindo, sobre as 6 partidas semeadas: as quatro seções saindo, nenhum jogador repetido entre elas, o corte de 3 nomes em "cai no segundo tempo", a seção de oscilação sendo omitida quando ninguém se encaixa, a trava dos 4 jogos escondendo o botão e explicando a espera, 501 escondendo a seção quando o servidor não tem chave, 400 com resumo vazio e o cache reexibindo sem chamar a API. **Números conferidos** (Carlos Daniel drible -20,33 contra variação 10,89 e finalização -7,67 contra 8,26; Felipe -12,17 contra 6,79; Vitor +20,67 contra 11,88; Paulo -17,2 no drible do 2º tempo): nenhum inventado, e a regra da variação típica foi aplicada certo nos dois lados. |
+| 12/08 | Fase 5, análise escrita, no jogo semeado de 394 ações: texto completo com as quatro seções, cache reexibindo sem nenhuma chamada a `ia.php`, offline preservando o texto e avisando, 401 sem sessão, 405 no GET, nenhum travessão na saída e nada transbordando em tela de 375px. **As afirmações do texto foram conferidas uma a uma contra os números** (209/185 ações, 60%/45% finalização, 81%/77% passe, João Levote 2 gols e 1,68 ações por minuto, Carlos Daniel 75% para 33%, Ryan 82% para 67% de reposição): nenhum número inventado. |
+| 12/08 | **Smoke test do host, rodado e aprovado sem uma ressalva.** PHP 8.3.19, MariaDB 11.4.12, `pdo_mysql`/`json`/`mbstring`/`curl`, HTTPS, service worker registrando com escopo `/`, IndexedDB, CREATE TABLE em InnoDB de verdade, reenvio do mesmo UUID sem duplicar, acento sobrevivendo em utf8mb4, rollback, POST com corpo JSON inteiro e **conexão de saída funcionando (HTTP 200)**. `memory_limit` 512M, `post_max_size` 30M. |
 | 12/08 | Fase 4 com dois "aparelhos" (duas origens, cada uma com IndexedDB e cookie próprios): instalação, recusa da segunda instalação (409), senha errada e e-mail inexistente com a mesma resposta (401), sync exigindo sessão, 1.815 registros numa tacada, aparelho B partindo do zero e recebendo 1.822, ida e volta de jogador novo e de undo, remoção virando inativo nos dois lados, offline mantendo a fila e subindo ao voltar, link público rejeitando token inválido (404) e servindo `X-Robots-Tag: noindex`. |
 
 ---
@@ -289,28 +396,36 @@ MySQL e chamadas diretas à API.
 
 ### Bloqueadas em terceiros
 
-- **Smoke test nunca foi rodado.** Os arquivos estão em `smoke/` e o host é
-  `https://magoscout.infinityfreeapp.com`. Falta o Saker preencher o
-  `config.php` (copiando o `config.exemplo.php`), emitir o SSL no painel e subir
-  para `htdocs/smoke/`. Ele agora trava três coisas: **PWA offline** (precisa de
-  HTTPS), o **`'https' => true`** no `api/config.php` e a **IA da fase 5 rodando
-  no servidor** (precisa de conexão de saída; se não houver, a chamada tem que
-  sair do navegador).
 - **Hospedagem definitiva.** InfinityFree é só para teste e apresentação. O Raul
   ainda vai decidir se banca um host pago. Por isso: credenciais e URL base num
   único `config.php`, sem cron, sem WebSocket, sem extensão exótica.
 - **Escudo do time.** Ele disse que tem e vai mandar. O banco já tem a coluna.
 - **Validar a tela de scout com o Raul operando de verdade.**
 
-### Próximo passo natural: fase 5 (IA)
+### Próximo passo natural: o último recurso da fase 5
 
-Sugerir o que treinar na semana, ajuste tático para o intervalo, análise escrita
-do jogo e quem está caindo de rendimento. `Estatisticas.temporada()` já entrega
-o agregado que a IA precisa ler.
+**Ajuste tático para o intervalo.** É o mais diferente dos três já feitos, e
+merece pensar antes de codar:
+
+- É o único que roda com a partida **em andamento**, então precisa chamar a rede
+  no meio do jogo, que é justamente o que a sincronização evita de propósito.
+- É o único em que a demora importa de verdade: as gerações medidas levaram
+  perto de 10 segundos, e o intervalo do futsal é curto. Talvez peça um prompt
+  bem menor, ou disparar sozinho ao encerrar o 1º tempo, em vez de esperar o
+  Raul pedir com o time sentado.
+- O resumo dele não é o da temporada nem o do jogo fechado: é o 1º tempo que
+  acabou de acontecer, provavelmente com o histórico recente do adversário
+  junto, se houver.
 
 ### Pontas soltas conhecidas
 
-- **PWA de verdade**: manifest e service worker. Só valem com HTTPS.
+- **PWA de verdade**: manifest e service worker. **Destravado em 12/08**, o
+  registro funcionou no host. Falta escrever os dois de verdade; o `sw.js` do
+  smoke test é um esqueleto que não guarda nada em cache.
+- **A análise da IA não atravessa para o outro aparelho.** Fica só no
+  IndexedDB de quem gerou: não tem tabela no servidor nem entra na
+  sincronização, e também não aparece no PNG do relatório. Se for atravessar,
+  o caminho é uma tabela com `recebido_em` como todas as outras.
 - **Apagar partida não existe** em lugar nenhum, nem na tela nem na
   sincronização. Se um dia existir, vai precisar de marca de exclusão: hoje, o
   que some de um aparelho continua no outro (o caminho de jogador, que usa

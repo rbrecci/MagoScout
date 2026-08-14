@@ -150,13 +150,13 @@ eventos são append-only, polling de 3 a 5s é suficiente para 2 scouts simultâ
 
 | Fase | Entrega | Resultado |
 |------|---------|-----------|
-| 0a | **Smoke test do host**: página HTTPS + endpoint PHP + INSERT/SELECT no MySQL | ⏳ arquivos prontos em `smoke/`, **ainda não rodado no host** |
+| 0a | **Smoke test do host**: página HTTPS + endpoint PHP + INSERT/SELECT no MySQL | ✅ rodado em 12/08, passou em tudo, inclusive conexão de saída |
 | 0 | Schema MySQL + API PHP + login da comissão | ✅ feito em 12/08, junto com a fase 4 |
 | 1 | Elenco, partida, substituição e tela de scout offline | **Já substitui a planilha** |
 | 2 | Histórico + totais + 1º contra 2º tempo | ✅ feito em 11/08. Recupera o que o LIMPAR apagava |
 | 3 | Gráficos e relatório em imagem | ✅ feito em 11/08. **A novidade principal** |
 | 4 | Login da comissão, sincronização e acesso somente-leitura dos jogadores | ✅ feito em 12/08. Pedido na entrevista |
-| 5 | IA de dicas de treino/tática | Bônus |
+| 5 | IA de dicas de treino/tática | 🔨 análise do jogo, quem está caindo e treino da semana, feitos em 12/08 (Gemini); falta o ajuste do intervalo |
 
 Revisado em 11/08/2026 com as respostas da entrevista: o login da comissão subiu
 para a fase 0 (ele quer usar em mais de um celular) e a substituição entrou na
